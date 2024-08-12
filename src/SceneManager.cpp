@@ -1,23 +1,28 @@
-//
-// Created by Cory Kacal on 5/8/24.
-//
-
 #include "SceneManager.h"
-#include "Debug.h"
-#include "Texture.h"
+#include "debug/PerformanceTest.h"
+#include "models/Triangle.h"
+#include "models/Square.h"
 
-SceneManager::SceneManager() = default;
-SceneManager::~SceneManager() = default;
+SceneManager::~SceneManager() {
+    Renderer::Shutdown();
+}
 
 SceneManager* SceneManager::instance{nullptr};
-Renderer* SceneManager::renderer{nullptr};
-Shader* SceneManager::shader{nullptr};
-VertexArray* SceneManager::va{nullptr};
-IndexBuffer* SceneManager::ib{nullptr};
 
+SceneManager::SceneManager() {
+    Renderer::Init();
+    ChunkManager::Init();
+    camera = &Camera::init(1440, 900);
+    int chunkdistance = 4;
+    for(int i=-chunkdistance; i<chunkdistance; i++) {
+        for(int j=-chunkdistance; j<chunkdistance; j++) {
+            ChunkManager::AddChunk({i,j});
+        }
+    }
+}
 
 SceneManager & SceneManager::init() {
-    if (!instance) // EDIT 1: Forgot to add this to the post.
+    if (!instance)
         instance = new SceneManager();
 
     return *instance;
@@ -29,55 +34,55 @@ SceneManager &SceneManager::get() {
     return *instance;
 }
 
-void SceneManager::addToScene(const Shape shape) {
+void SceneManager::addToScene(Model* shape) {
     shapes.push_back(shape);
 }
 
-std::list<Shape> SceneManager::getScene() {
+std::list<Model*> SceneManager::getScene() {
     return shapes;
 }
 
-void SceneManager::DrawScene() const {
-    renderer->Clear();
-    renderer->Draw(*va, *ib, *shader);
+void SceneManager::Compile() {
+    PerformanceTest::UseFPS(true);
+    PerformanceTest::Start();
+    vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
+    //each triangle has uuid.
+    //keep track of uuid and memory address in renderer
+    //when model changes
+    //instead of checking when model changes, just set certain functions that will modify the model to be dirty.
+    //if a model is drity, use its uuid to find its verticies in the buffer and update them in place.
+    //if model goes away. delete from buffer. there will be fragmentaion there. have that open space.
+    //polygon, sequences of 3, can be filled out of order. the triangle is very ipmortant.
+    //fill triangles of data. should I make every Model out of Traingle objects?
+    //
+    //model changes: get all model classes on same page in constructors and class variables
+    //make models instatiate triagnles? make triangle a struct?
+    //GetVerticies in model compile all triangles in class?
+    //flesh out the function variables too. like Coord.
+    //create dirty function inside Model. wrap/override Setsize and shit with dirty.
+    //dirty function will add uuid to renderer?
+    if(!dirtyChunks.empty()) {
+        Renderer::BeginBatch();
+        for(const Chunk& dirtyChunk : dirtyChunks) {
+            for(Quadrilateral* quad : dirtyChunk.quads) {
+                Renderer::DrawModel(quad);
+            }
+        }
+        Renderer::DrawModel(new Cube(7, {0,0,-10},{0.3f, 0.2f, 1.0f, 1.0f}));
+    }
+    Renderer::EndBatch();
+    Renderer::SetUniformMat4f("u_MVP", camera->GetMVP());
+    Renderer::SetUniform3fv("u_CameraPos", camera->getCameraPosition());
+    Renderer::SetUniform1i("u_FogDistance", 100);
+    Renderer::Clear();
+    Renderer::Flush();
+    PerformanceTest::End();
 }
 
-void SceneManager::CompileScene() const {
-    //each shape has positions and indices
+Camera *SceneManager::getCamera() {
+    return camera;
+}
 
-    float positions[] = {
-            -0.5f, -0.5f, 0.0f, 0.0f, // 0
-            0.5f, -0.5f, 1.0f, 0.0f, // 1
-            0.5f,  0.5f, 1.0f, 1.0f, // 2
-            -0.5f,  0.5f, 0.0f, 1.0f  // 3
-    };
-    unsigned int indices[] = {
-            0, 1, 2,
-            2, 3, 0
-    };
-
-    //this changes based on shapes
-    va = new VertexArray();
-    VertexBuffer vb = VertexBuffer(positions, sizeof(positions));
-    ib = new IndexBuffer(indices, 6);
-
-
-    //this stays same
-    VertexBufferLayout layout;
-    layout.AddFloat(2);
-    layout.AddFloat(2);
-
-    //stays same
-    va->AddBuffer(vb, layout);
-
-    shader = new Shader("../res/shader/vertex.glsl", "../res/shader/fragment.glsl");
-    //stays same
-    shader->Bind();
-
-    //might be apart of shape
-    Texture texture("../res/texture/birb.jpg");
-    texture.Bind();
-    shader->SetUniform1i("u_Texture", 0);
-
-    renderer = new Renderer();
+void SceneManager::static_callback(GLFWwindow *window, float xpos, float ypos) {
+    Camera::static_mouse_callback(window, xpos, ypos);
 }

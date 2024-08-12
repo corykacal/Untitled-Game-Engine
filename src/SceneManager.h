@@ -1,6 +1,14 @@
 #include "list"
-#include "shapes/Shape.h"
+#include "models/Model.h"
 #include "Renderer.h"
+#include "../vendor/glm/glm.hpp"
+#include "../vendor/glm/gtc/matrix_transform.hpp"
+#include "../vendor/perlin/PerlinNoise.hpp"
+#include "Camera.h"
+#include "map/ChunkManager.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include "../vendor/glm/gtx/string_cast.hpp"
 
 #ifndef UNTITLED_SCENEMANAGER_H
 #define UNTITLED_SCENEMANAGER_H
@@ -12,13 +20,9 @@ private:
     SceneManager();
     static SceneManager* instance;
 
-    std::list<Shape> shapes;
+    std::list<Model*> shapes;
 
-    static Renderer* renderer;
-    static Shader* shader;
-
-    static IndexBuffer* ib;
-    static VertexArray* va;
+    Camera* camera;
 
 public:
     ~SceneManager();
@@ -26,9 +30,8 @@ public:
     static SceneManager & init();
     static SceneManager & get();
 
-    void addToScene(const Shape shape);
-    std::list<Shape> getScene();
-
+    void addToScene(Model* shape);
+    std::list<Model*> getScene();
 
     // Delete copy assignment and move assignment constructors
     SceneManager(const SceneManager&) = delete;
@@ -38,10 +41,10 @@ public:
     SceneManager& operator=(const SceneManager&) = delete;
     SceneManager& operator=(SceneManager&&) = delete;
 
-    void DrawScene() const;
-    void CompileScene() const;
+    void Compile();
 
-
+    Camera* getCamera();
+    static void static_callback(GLFWwindow *window, float xpos, float ypos);
 };
 
 

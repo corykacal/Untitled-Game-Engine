@@ -10,7 +10,22 @@ file(GLOB_RECURSE sources src/*.cpp src/*.h src/buffers/*)
 file(GLOB_RECURSE outsideSources vendor/stb_image/*.cpp vendor/stb_image/*.h)
 
 # adding files from above
-add_executable(untitled ${sources} ${outsideSources})
+add_executable(untitled ${sources} ${outsideSources}
+        src/Camera.cpp
+        src/Camera.h
+        src/models/Cube.cpp
+        src/models/Cube.h
+        src/util/ByteHelper.h
+        src/debug/PerformanceTest.h
+        src/models/Quadrilateral.cpp
+        src/models/Quadrilateral.h
+        src/map/ChunkManager.cpp
+        src/map/ChunkManager.h
+        src/buffers/Texture.cpp
+        src/buffers/Texture.h
+        src/models/Triangle.cpp
+        src/models/Triangle.h
+        vendor/uuid/uuid_v4.h)
 
 
 # glfw
