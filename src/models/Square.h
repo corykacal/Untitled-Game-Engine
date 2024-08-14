@@ -11,7 +11,8 @@
 class Square : public Model {
 public:
     Square(float size, glm::vec3 pos, glm::vec4 color):
-            size(size), pos(pos), color(color) {
+    Model(), size(size), pos(pos), color(color), doubleSided(false)
+    {
     }
 
 private:
@@ -19,6 +20,7 @@ private:
     glm::vec3 pos;
     glm::vec4 color;
 
+    bool doubleSided;
     float texIndex;
 
     vector<Vertex> o_getVertexData()  override;

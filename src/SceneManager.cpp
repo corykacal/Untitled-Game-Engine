@@ -11,6 +11,7 @@ SceneManager* SceneManager::instance{nullptr};
 
 SceneManager::SceneManager() {
     Renderer::Init();
+    Renderer::SetUniform1i("u_FogDistance", 100);
     ChunkManager::Init();
     camera = &Camera::init(1440, 900);
     int chunkdistance = 4;
@@ -62,20 +63,17 @@ void SceneManager::Compile() {
     //create dirty function inside Model. wrap/override Setsize and shit with dirty.
     //dirty function will add uuid to renderer?
     if(!dirtyChunks.empty()) {
-        Renderer::BeginBatch();
         for(const Chunk& dirtyChunk : dirtyChunks) {
             for(Quadrilateral* quad : dirtyChunk.quads) {
-                Renderer::DrawModel(quad);
+                Renderer::AddModel(quad);
             }
         }
-        Renderer::DrawModel(new Cube(7, {0,0,-10},{0.3f, 0.2f, 1.0f, 1.0f}));
+        //Renderer::AddModel(new Cube(7, {0, 0, -10}, {0.3f, 0.2f, 1.0f, 1.0f}));
     }
-    Renderer::EndBatch();
     Renderer::SetUniformMat4f("u_MVP", camera->GetMVP());
     Renderer::SetUniform3fv("u_CameraPos", camera->getCameraPosition());
-    Renderer::SetUniform1i("u_FogDistance", 100);
     Renderer::Clear();
-    Renderer::Flush();
+    Renderer::Draw();
     PerformanceTest::End();
 }
 

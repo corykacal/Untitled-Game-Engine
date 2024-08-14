@@ -15,10 +15,11 @@ vector<Vertex> Square::o_getVertexData()  {
 }
 
 vector<Index> Square::o_getIndicies()  {
-    return {
-            {0}, {2}, {1},  // First triangle
-            {2}, {3}, {1},   // Second triangle
-            {2}, {0}, {1},  // First triangle
-            {3}, {2}, {1}   // Second triangle
-    };
+    if(doubleSided)
+        return {{0}, {2}, {1},
+                {2}, {3}, {1},
+                {2}, {0}, {1},
+                {3}, {2}, {1}};
+    return {{0}, {2}, {1},
+            {2}, {3}, {1}};
 }

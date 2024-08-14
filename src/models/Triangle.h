@@ -9,13 +9,15 @@
 
 class Triangle : public Model {
 public:
-    Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, glm::vec4 color) {
+    Triangle(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, glm::vec4 color)
+    : Model()
+    {
         verticies = {
                 {vertex1, color, {0, 0}, 0},
                 {vertex2, color, {0, 1}, 0},
                 {vertex3, color, {1, 0}, 0}
             };
-        doubleSided = true;
+        doubleSided = false;
     }
 
 private:

@@ -1,8 +1,10 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray()
+VertexArray::VertexArray(VertexBufferLayout& layout)
 {
     GLCall( glGenVertexArrays(1, &m_RendererID) );
+    Bind();
+    AddBuffer(layout);
 }
 
 VertexArray::~VertexArray()

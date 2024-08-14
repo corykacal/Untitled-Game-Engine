@@ -25,7 +25,13 @@ add_executable(untitled ${sources} ${outsideSources}
         src/buffers/Texture.h
         src/models/Triangle.cpp
         src/models/Triangle.h
-        vendor/uuid/uuid_v4.h)
+        vendor/uuid/uuid_v4.h
+        src/buffers/DynamicIndexBuffer.cpp
+        src/buffers/DynamicIndexBuffer.cpp
+        src/util/ModelIdManager.h
+        src/buffers/DynamicVertexBuffer.h
+        src/buffers/DynamicBuffer.h
+        src/util/ModelIdManager.cpp)
 
 
 # glfw

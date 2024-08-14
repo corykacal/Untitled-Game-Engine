@@ -12,13 +12,13 @@ class Quadrilateral : public Model {
 public:
 
     Quadrilateral(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, glm::vec3 vertex4, float texIndex) :
-    vertex1(vertex1), vertex2(vertex2), vertex3(vertex3), vertex4(vertex4), texIndex(texIndex)
+    Model(), vertex1(vertex1), vertex2(vertex2), vertex3(vertex3), vertex4(vertex4), texIndex(texIndex)
     {
         Quadrilateral::color = {1.0f, 1.0f, 1.0f, 1.0f};
     }
 
     Quadrilateral(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, glm::vec3 vertex4, glm::vec4 color) :
-            vertex1(vertex1), vertex2(vertex2), vertex3(vertex3), vertex4(vertex4), color(color)
+    Model(), vertex1(vertex1), vertex2(vertex2), vertex3(vertex3), vertex4(vertex4), color(color)
     {
         texIndex = 0.0f;
     }

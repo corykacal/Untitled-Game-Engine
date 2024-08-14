@@ -12,13 +12,13 @@ class Cube : public Model
 {
 public:
     Cube(float size, glm::vec3 pos, glm::vec4 color) :
-    size(size), pos(pos), color(color)
+    Model(), size(size), pos(pos), color(color)
     {
         texIndex = 0.0f;
     }
 
     Cube(float size, glm::vec3 pos, float texIndex) :
-    size(size), pos(pos), texIndex(texIndex)
+    Model(), size(size), pos(pos), texIndex(texIndex)
     {
         color = {1.0f, 1.0f, 1.0f, 1.0f};
     }

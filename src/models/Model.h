@@ -5,6 +5,7 @@
 #include "../../vendor/glm/vec4.hpp"
 #include "../../vendor/glm/vec3.hpp"
 #include "../../vendor/glm/vec2.hpp"
+#include "../util/ModelIdManager.h"
 #include <GL/glew.h>
 
 #ifndef UNTITLED_SHAPE_H
@@ -31,13 +32,15 @@ public:
     vector<Vertex> GetVertexData() { return o_getVertexData(); };
     vector<Index> getIndicies() { return o_getIndicies(); };
 
+    unsigned int getModelID() { return m_ModelID; };
+
+    Model(): m_ModelID(ModelIdManager::getId()) {}
     virtual ~Model() = default;
 
 private:
     virtual vector<Vertex> o_getVertexData() = 0;
     virtual vector<Index> o_getIndicies() = 0;
-
-
+    unsigned int m_ModelID;
 };
 
 

@@ -2,9 +2,9 @@
 
 #include <GL/glew.h>
 #include "buffers/VertexArray.h"
-#include "buffers/IndexBuffer.h"
 #include "buffers/Shader.h"
 #include "buffers/Texture.h"
+#include "buffers/DynamicBuffer.h"
 #include "models/Model.h"
 #include "models/Cube.h"
 #include "util/ByteHelper.h"
@@ -18,13 +18,10 @@ class Renderer
     public:
         static void Init();
         static void Shutdown();
-
-        static void BeginBatch();
-        static void EndBatch();
-        static void Flush();
-
+        static void Draw();
         static void Clear();
-        static void DrawModel(Model *model);
+        static void AddModel(Model* model);
+        static void DeleteModel(Model* model);
 
         static void SetUniform1i(const std::string& name, int value);
         static void SetUniform3fv(string name, const glm::vec3& vector);
