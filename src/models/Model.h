@@ -31,13 +31,14 @@ public:
     vector<Vertex> GetVertexData() { return o_getVertexData(); };
     vector<Index> getIndicies() { return o_getIndicies(); };
 
+    unsigned int getModelID() { return m_ModelID; };
+
     virtual ~Model() = default;
 
 private:
     virtual vector<Vertex> o_getVertexData() = 0;
     virtual vector<Index> o_getIndicies() = 0;
-
-
+    unsigned int m_ModelID;
 };
 
 

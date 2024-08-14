@@ -162,7 +162,6 @@ void Renderer::SetUpIndexBuffer() {
 
     s_Data.VertexIB = new IndexBuffer(MaxBufferSize);
     s_Data.VertexIB->Bind();
-
 }
 
 void Renderer::SetUpTextures() {
