@@ -27,7 +27,15 @@ SceneManager::SceneManager() {
         }
     }
     Renderer::AddModel(OBJLoader::LoadOBJ("../res/models/monkey.obj"));
-    Renderer::AddModel(new Cube(7, {40,100,0}, {1.0f, 1.0f, 1.0f, 1.0f}));
+    //THE SUN
+    glm::vec4 sunColor = {1.0f, 0.9f, 0.9f, 1.0f};
+    glm::vec3 sunPos = {40,100,0};
+    Renderer::SetUniform3fv("u_LightColor", sunColor);
+    Renderer::SetUniform3fv("u_LightPosition", sunPos);
+    Renderer::AddModel(new Cube(7, sunPos, sunColor));
+    Renderer::AddModel(new Cube(4, {70, 80, 30}, {1.0f, 1.0f, 1.0f, 1.0f}));
+    Renderer::SetUniform3fv("u_AmbientLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    Renderer::SetUniform1f("u_AmbientLightStrength", 0.3f);
 }
 
 SceneManager & SceneManager::init() {
@@ -52,8 +60,6 @@ std::list<Model*> SceneManager::getScene() {
 }
 
 void SceneManager::Compile() {
-    Renderer::SetUniform3fv("u_AmbientLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    Renderer::SetUniform1f("u_AmbientLightStrength", 1.0f);
     Renderer::SetUniformMat4f("u_MVP", camera->GetMVP());
     Renderer::SetUniform3fv("u_CameraPos", camera->getCameraPosition());
     Renderer::Clear();

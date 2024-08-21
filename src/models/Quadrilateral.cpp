@@ -5,12 +5,14 @@
 #include "Quadrilateral.h"
 
 vector<Vertex> Quadrilateral::o_getVertexData()  {
+    glm::vec3 normal1 = calculateNormal(vertex1, vertex2, vertex4);
+    glm::vec3 normal2 = calculateNormal(vertex2, vertex3, vertex4);
     return
     {
-            {vertex1, color, {0,0,0}, {0,1}, texIndex},
-            {vertex2, color, {0,0,0}, {1,0}, texIndex},
-            {vertex3, color, {0,0,0}, {0,0}, texIndex},
-            {vertex4, color, {0,0,0}, {1,1}, texIndex}
+            {vertex1, color, normal1, {0,1}, texIndex},
+            {vertex2, color, normal1, {1,0}, texIndex},
+            {vertex3, color, normal1, {0,0}, texIndex},
+            {vertex4, color, normal1, {1,1}, texIndex}
     };
 }
 

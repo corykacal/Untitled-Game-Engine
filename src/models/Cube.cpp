@@ -6,16 +6,16 @@
 
 vector<Vertex> Cube::o_getVertexData()
 {
-    return
-    {
-            { {pos.x - size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {0.0f, 0.0f}, texIndex},
-            { {pos.x - size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {1.0f, 0.0f}, texIndex},
-            { {pos.x - size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {1.0f, 1.0f}, texIndex},
-            { {pos.x - size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {0.0f, 1.0f}, texIndex},
-            { {pos.x + size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {1.0f, 0.0f}, texIndex},
-            { {pos.x + size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {0.0f, 0.0f}, texIndex},
-            { {pos.x + size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {0.0f, 1.0f}, texIndex},
-            { {pos.x + size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {0,0,0}, {1.0f, 1.0f}, texIndex}    };
+    return {
+        // Vertex 0: Left-Bottom-Back
+                    { {pos.x - size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f}, texIndex},
+                    { {pos.x - size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {-1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, texIndex},
+                    { {pos.x - size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {-1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, texIndex},
+                    { {pos.x - size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, texIndex},
+                    { {pos.x + size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {1.0f, -1.0f, -1.0f}, {1.0f, 0.0f}, texIndex},
+                    { {pos.x + size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {1.0f, -1.0f, 1.0f}, {0.0f, 0.0f}, texIndex},
+                    { {pos.x + size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, texIndex},
+                    { {pos.x + size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {1.0f, 1.0f, -1.0f}, {1.0f, 1.0f}, texIndex}};
 }
 
 vector<Index> Cube::o_getIndicies()
