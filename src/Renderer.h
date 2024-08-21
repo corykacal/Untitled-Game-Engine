@@ -24,7 +24,9 @@ class Renderer
         static void DeleteModel(Model* model);
 
         static void SetUniform1i(const std::string& name, int value);
+        static void SetUniform1f(const std::string& name, float value);
         static void SetUniform3fv(string name, const glm::vec3& vector);
+        static void SetUniform4fv(string name, const glm::vec4& vector);
         static void SetUniformMat4f(string name, const glm::mat4& matrix);
 
         struct Stats

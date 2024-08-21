@@ -20,6 +20,14 @@ SceneManager::SceneManager() {
             ChunkManager::AddChunk({i,j});
         }
     }
+    vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
+    for(const Chunk& dirtyChunk : dirtyChunks) {
+        for(Quadrilateral* quad : dirtyChunk.quads) {
+            Renderer::AddModel(quad);
+        }
+    }
+    Renderer::AddModel(OBJLoader::LoadOBJ("../res/models/monkey.obj"));
+    Renderer::AddModel(new Cube(7, {40,100,0}, {1.0f, 1.0f, 1.0f, 1.0f}));
 }
 
 SceneManager & SceneManager::init() {
@@ -44,37 +52,12 @@ std::list<Model*> SceneManager::getScene() {
 }
 
 void SceneManager::Compile() {
-    PerformanceTest::UseFPS(true);
-    PerformanceTest::Start();
-    vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
-    //each triangle has uuid.
-    //keep track of uuid and memory address in renderer
-    //when model changes
-    //instead of checking when model changes, just set certain functions that will modify the model to be dirty.
-    //if a model is drity, use its uuid to find its verticies in the buffer and update them in place.
-    //if model goes away. delete from buffer. there will be fragmentaion there. have that open space.
-    //polygon, sequences of 3, can be filled out of order. the triangle is very ipmortant.
-    //fill triangles of data. should I make every Model out of Traingle objects?
-    //
-    //model changes: get all model classes on same page in constructors and class variables
-    //make models instatiate triagnles? make triangle a struct?
-    //GetVerticies in model compile all triangles in class?
-    //flesh out the function variables too. like Coord.
-    //create dirty function inside Model. wrap/override Setsize and shit with dirty.
-    //dirty function will add uuid to renderer?
-    if(!dirtyChunks.empty()) {
-        for(const Chunk& dirtyChunk : dirtyChunks) {
-            for(Quadrilateral* quad : dirtyChunk.quads) {
-                Renderer::AddModel(quad);
-            }
-        }
-        //Renderer::AddModel(new Cube(7, {0, 0, -10}, {0.3f, 0.2f, 1.0f, 1.0f}));
-    }
+    Renderer::SetUniform3fv("u_AmbientLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    Renderer::SetUniform1f("u_AmbientLightStrength", 1.0f);
     Renderer::SetUniformMat4f("u_MVP", camera->GetMVP());
     Renderer::SetUniform3fv("u_CameraPos", camera->getCameraPosition());
     Renderer::Clear();
     Renderer::Draw();
-    PerformanceTest::End();
 }
 
 Camera *SceneManager::getCamera() {

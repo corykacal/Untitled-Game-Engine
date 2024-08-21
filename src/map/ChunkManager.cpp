@@ -56,13 +56,8 @@ vector<Quadrilateral *> ChunkManager::GetOrCreateChunk(glm::vec2 coords) {
             glm::vec3 blc = GetVertexHeightAt({chunkXCoord, chunkZCoord+1});
             glm::vec3 brc = GetVertexHeightAt({chunkXCoord+1, chunkZCoord+1});
 
-            if(i%2 != j%2) {
-                Quadrilateral* quad = new Quadrilateral(tlc, trc, blc, brc, 1.0f);
-                quads.push_back(quad);
-            } else {
-                Quadrilateral* quad = new Quadrilateral(trc, tlc, brc, blc, color);
-                quads.push_back(quad);
-            }
+            Quadrilateral* quad = new Quadrilateral(tlc, trc, blc, brc, 2.0f);
+            quads.push_back(quad);
         }
     }
     Chunk newChunk = Chunk{coords, quads, 1};

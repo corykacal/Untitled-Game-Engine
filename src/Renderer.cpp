@@ -26,6 +26,7 @@ void Renderer::Init() {
     VertexBufferLayout layout;
     layout.AddFloat(3);
     layout.AddFloat(4);
+    layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
     s_Data.DynamicBuffer = new DynamicBuffer(MaxBufferSize, layout);
@@ -63,9 +64,19 @@ void Renderer::SetUniform1i(const string &name, GLint value)
     s_Data.shader->SetUniform1i(name, value);
 }
 
+void Renderer::SetUniform1f(const string &name, float value)
+{
+    s_Data.shader->SetUniform1f(name, value);
+}
+
 void Renderer::SetUniform3fv(string name, const glm::vec3& vector)
 {
     s_Data.shader->SetUniform3fv(name, vector);
+}
+
+void Renderer::SetUniform4fv(string name, const glm::vec4& vector)
+{
+    s_Data.shader->SetUniform4fv(name, vector);
 }
 
 void Renderer::SetUniformMat4f(string name, const glm::mat4 &matrix)
@@ -112,3 +123,4 @@ Texture* Renderer::LoadTexture(const string &filepath)
     s_Data.TextureSlotIndex++;
     return texture;
 }
+

@@ -7,10 +7,10 @@
 vector<Vertex> Quadrilateral::o_getVertexData()  {
     return
     {
-            {vertex1, color, {0,1}, texIndex},
-            {vertex2, color, {1,0}, texIndex},
-            {vertex3, color, {0,0}, texIndex},
-            {vertex4, color, {1,1}, texIndex}
+            {vertex1, color, {0,0,0}, {0,1}, texIndex},
+            {vertex2, color, {0,0,0}, {1,0}, texIndex},
+            {vertex3, color, {0,0,0}, {0,0}, texIndex},
+            {vertex4, color, {0,0,0}, {1,1}, texIndex}
     };
 }
 

@@ -7,6 +7,7 @@
 #include <fstream>
 #include <GL/glew.h>
 
+#include "../util/FileHelper.h"
 #include "../debug/Debug.h"
 #include "../../vendor/glm/gtc/matrix_transform.hpp"
 
@@ -30,6 +31,7 @@ class Shader
         void SetUniform1iv(const std::string &name, int value, GLint* data);
         void SetUniform1f(const std::string& name, float value);
         void SetUniform3fv(const std::string& name, const glm::vec3& vector);
+        void SetUniform4fv(const std::string& name, const glm::vec4& vector);
         void SetUniform4f(const std::string& name, float f0, float f1, float f2, float f3);
         void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 

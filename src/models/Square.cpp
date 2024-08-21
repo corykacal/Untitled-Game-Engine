@@ -7,10 +7,10 @@
 vector<Vertex> Square::o_getVertexData()  {
     return {
             // Positions                           // Colors
-            {glm::vec3(pos[0]-size/2, pos[1]+size/2, pos[2]), color, {0,1}, texIndex},  // Top-left
-            {glm::vec3(pos[0]+size/2, pos[1]+size/2, pos[2]), color, {1,1}, texIndex},  // Top-right
-            {glm::vec3(pos[0]-size/2, pos[1]-size/2, pos[2]), color, {0,0}, texIndex},  // Bottom-left
-            {glm::vec3(pos[0]+size/2, pos[1]-size/2, pos[2]), color, {1,0}, texIndex}   // Bottom-right
+            {glm::vec3(pos[0]-size/2, pos[1]+size/2, pos[2]), color, {0,0,0}, {0,1}, texIndex},  // Top-left
+            {glm::vec3(pos[0]+size/2, pos[1]+size/2, pos[2]), color, {0,0,0}, {1,1}, texIndex},  // Top-right
+            {glm::vec3(pos[0]-size/2, pos[1]-size/2, pos[2]), color, {0,0,0}, {0,0}, texIndex},  // Bottom-left
+            {glm::vec3(pos[0]+size/2, pos[1]-size/2, pos[2]), color, {0,0,0}, {1,0}, texIndex}   // Bottom-right
     };
 }
 

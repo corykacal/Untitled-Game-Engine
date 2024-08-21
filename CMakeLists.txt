@@ -13,7 +13,6 @@ file(GLOB_RECURSE outsideSources vendor/stb_image/*.cpp vendor/stb_image/*.h)
 add_executable(untitled ${sources} ${outsideSources}
         src/Camera.cpp
         src/Camera.h
-        src/models/Cube.cpp
         src/models/Cube.h
         src/util/ByteHelper.h
         src/debug/PerformanceTest.h
@@ -31,7 +30,11 @@ add_executable(untitled ${sources} ${outsideSources}
         src/util/ModelIdManager.h
         src/buffers/DynamicVertexBuffer.h
         src/buffers/DynamicBuffer.h
-        src/util/ModelIdManager.cpp)
+        src/util/ModelIdManager.cpp
+        src/models/OBJLoader.cpp
+        src/models/OBJLoader.h
+        src/models/OBJModel.h
+        src/util/FileHelper.h)
 
 
 # glfw
