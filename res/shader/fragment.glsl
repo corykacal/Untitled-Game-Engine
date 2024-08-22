@@ -16,71 +16,65 @@ uniform vec3 u_LightPosition;
 uniform vec3 u_LightColor;
 uniform vec3 u_CameraPos;
 
-void main()
+// Global variables
+const float g_ParallaxEndDistance = 15.0f;
+const float g_HeightScale = 0.09f; // Slightly increased for more depth
+const float g_GridSize = 1.0f; // Adjust based on your grid size
+
+vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, float distanceFactor)
 {
-    int index = int(v_TexIndex);
-    vec3 viewDir = normalize(u_CameraPos - v_Position);
+    float heightScale = g_HeightScale * (1.0 - distanceFactor);
+    float numLayers = mix(32.0, 16.0, distanceFactor); // Increased minimum layers
+    float layerDepth = 1.0 / numLayers;
+    float currentLayerDepth = 0.0;
+    vec2 P = viewDir.xy / viewDir.z * heightScale;
+    vec2 deltaTexCoords = P / numLayers;
 
-    float heightScale = 0.09f;
-    float minLayers = 24.0f;
-    float maxLayers = 32.0f;
-    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0f, 0.0f, 1.0f), viewDir)));
-    float layerDepth = 1.0f/numLayers;
-    float currentLayerDepth = 0.0f;
+    vec2 currentTexCoords = texCoords;
+    float currentDepthMapValue = 1.0 - texture(u_Textures[int(v_TexIndex)+4], currentTexCoords).r;
 
-    vec2 S = viewDir.xy / viewDir.z * heightScale;
-    vec2 deltaUVs = S / numLayers;
-
-    vec2 UVs = v_TexCoord;
-    float currentDepthMapValue = 1.0f - texture(u_Textures[index+4], UVs).r;
-
-    // Loop till the point on the heightmap is "hit"
     while(currentLayerDepth < currentDepthMapValue)
     {
-        UVs -= deltaUVs;
-        currentDepthMapValue = 1.0f - texture(u_Textures[index+4], UVs).r;
+        currentTexCoords -= deltaTexCoords;
+        currentDepthMapValue = 1.0f - texture(u_Textures[int(v_TexIndex)+4], currentTexCoords).r;
         currentLayerDepth += layerDepth;
     }
 
-    // Apply Occlusion (interpolation with prev value)
-    vec2 prevTexCoords = UVs + deltaUVs;
-    float afterDepth  = currentDepthMapValue - currentLayerDepth;
-    float beforeDepth = 1.0f - texture(u_Textures[index+4], prevTexCoords).r - currentLayerDepth + layerDepth;
-    float weight = afterDepth / (afterDepth - beforeDepth);
-    UVs = prevTexCoords * weight + UVs * (1.0f - weight);
+    return currentTexCoords;
+}
 
-    // Get rid of anything outside the normal range
-    if(UVs.x > 1.0 || UVs.y > 1.0 || UVs.x < 0.0 || UVs.y < 0.0)
-    discard;
+void main()
+{
+    vec3 viewDir = normalize(u_CameraPos - v_Position);
+    float distanceFactor = smoothstep(0.0, g_ParallaxEndDistance, v_Distance);
 
+    vec2 texCoords = v_TexCoord;
 
+    if (distanceFactor < 1.0) {
+        vec3 viewDirTangent = normalize(transpose(v_TBN) * viewDir);
+        texCoords = parallaxMapping(v_TexCoord, viewDirTangent, distanceFactor);
+    }
 
-
-    // Base color
-    vec4 texColor = texture(u_Textures[index], UVs);
+    vec4 texColor = texture(u_Textures[int(v_TexIndex)], texCoords);
     color = mix(vec4(1.0f, 1.0f, 0.0f, 1.0f), texColor, step(0.5, v_TexIndex));
 
-    // Normal map
-    vec3 normalMap = texture(u_Textures[index+2], UVs).rgb;
+    // Normal mapping with distance-based interpolation
+    vec3 normalMap = texture(u_Textures[int(v_TexIndex)+2], texCoords).rgb;
     vec3 normal = normalize(v_TBN * (normalMap * 2.0 - 1.0));
 
-    // Ambient light
-    vec4 ambient = vec4(u_AmbientLightStrength * u_AmbientLightColor, 1.0f);
-
-    // Diffuse lighting
+    // Lighting calculations
     vec3 lightDir = normalize(u_LightPosition - v_Position);
     float diff = max(dot(normal, lightDir), 0.0);
-    vec4 diffuse = vec4(diff * u_LightColor, 1.0f);
-
-    // Specular lighting
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-    vec4 specular = vec4(0.5 * spec * u_LightColor, 1.0f);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 4.0);
 
-    // Final light calculation
-    color = (ambient + diffuse + specular) * color;
+    // Combined lighting
+    vec3 lighting = u_AmbientLightColor * u_AmbientLightStrength +
+    u_LightColor * (diff + 0.5 * spec);
+
+    color.rgb *= lighting;
 
     // Fog effect
-    float fogFactor = clamp((v_Distance - u_FogDistance) / 200, 0.0, 1.0);
-    color = mix(color, vec4(0.8, 0.9, 1, 1), fogFactor);
+    float fogFactor = clamp((v_Distance - float(u_FogDistance)) / 200.0, 0.0, 1.0);
+    color = mix(color, vec4(0.8, 0.9, 1.0, 1.0), fogFactor);
 }

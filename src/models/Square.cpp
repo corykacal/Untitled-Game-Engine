@@ -5,19 +5,16 @@
 #include "Square.h"
 
 vector<Vertex> Square::o_getVertexData()  {
+    glm::vec3 normal = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    // Tangent along the X-axis
+    glm::vec3 tangent = glm::vec3(1.0f, 0.0f, 0.0f);
     vector<Vertex> things = {
-            // Positions                           // Colors
-            {glm::vec3(pos[0]-size/2, pos[1]+size/2, pos[2]), {0,0,0}, {0,0,0}, {0,1}, texIndex},  // Top-left
-            {glm::vec3(pos[0]+size/2, pos[1]+size/2, pos[2]), {0,0,0}, {0,0,0}, {1,1}, texIndex},  // Top-right
-            {glm::vec3(pos[0]-size/2, pos[1]-size/2, pos[2]), {0,0,0}, {0,0,0}, {0,0}, texIndex},  // Bottom-left
-            {glm::vec3(pos[0]+size/2, pos[1]-size/2, pos[2]), {0,0,0}, {0,0,0}, {1,0}, texIndex}   // Bottom-right
+            {glm::vec3(pos[0]-size/2, pos[1], pos[2]-size/2), normal, tangent, {0,1}, texIndex},  // Top-left
+            {glm::vec3(pos[0]+size/2, pos[1], pos[2]-size/2), normal, tangent, {1,1}, texIndex},  // Top-right
+            {glm::vec3(pos[0]-size/2, pos[1], pos[2]+size/2), normal, tangent, {0,0}, texIndex},  // Bottom-left
+            {glm::vec3(pos[0]+size/2, pos[1], pos[2]+size/2), normal, tangent, {1,0}, texIndex}   // Bottom-right
     };
-    glm::vec3 tangent = calculateTangent(things[0].Position, things[1].Position, things[2].Position, things[0].TexCoords, things[1].TexCoords, things[2].TexCoords);
-    glm::vec3 normal = calculateNormal(things[0].Position, things[1].Position, things[2].Position);
-    for(Vertex& thing : things) {
-        thing.Normal = normal;
-        thing.Tangent = tangent;
-    }
     return things;
 }
 

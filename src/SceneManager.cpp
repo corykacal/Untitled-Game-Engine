@@ -23,7 +23,7 @@ SceneManager::SceneManager() {
     vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
     for(const Chunk& dirtyChunk : dirtyChunks) {
         for(Quadrilateral* quad : dirtyChunk.quads) {
-            //Renderer::AddModel(quad);
+            Renderer::AddModel(quad);
         }
     }
     Renderer::AddModel(OBJLoader::LoadOBJ("../res/models/monkey.obj"));
@@ -33,9 +33,9 @@ SceneManager::SceneManager() {
     Renderer::AddModel(new Square(3, {10, 10, -20}, 2.0f));
     Renderer::AddModel(new Square(3, {13, 10, -20}, 2.0f));
     Renderer::AddModel(new Square(3, {16, 10, -20}, 2.0f));
-    Renderer::AddModel(new Square(3, {19, 10, -20}, 2.0f));
-    Renderer::AddModel(new Square(3, {22, 10, -20}, 2.0f));
-    Renderer::AddModel(new Square(3, {25, 10, -20}, 2.0f));
+    Renderer::AddModel(new Square(3, {19, 10, -20}, 1.0f));
+    Renderer::AddModel(new Square(3, {22, 10, -20}, 1.0f));
+    Renderer::AddModel(new Square(3, {25, 10, -20}, 1.0f));
     Renderer::SetUniform3fv("u_LightColor", sunColor);
     Renderer::SetUniform3fv("u_LightPosition", sunPos);
     Renderer::AddModel(new Cube(7, sunPos, sunColor));
