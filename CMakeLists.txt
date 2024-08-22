@@ -31,8 +31,8 @@ add_executable(untitled ${sources} ${outsideSources}
         src/buffers/DynamicVertexBuffer.h
         src/buffers/DynamicBuffer.h
         src/util/ModelIdManager.cpp
-        src/models/OBJLoader.cpp
-        src/models/OBJLoader.h
+        src/util/OBJLoader.cpp
+        src/util/OBJLoader.h
         src/models/OBJModel.h
         src/util/FileHelper.h)
 

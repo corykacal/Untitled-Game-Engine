@@ -6,27 +6,30 @@
 
 vector<Vertex> Cube::o_getVertexData()
 {
+    glm::vec3 tangentX(1.0f, 0.0f, 0.0f);
+    glm::vec3 tangentY(0.0f, 1.0f, 0.0f);
+    glm::vec3 tangentZ(0.0f, 0.0f, 1.0f);
+
     return {
-        // Vertex 0: Left-Bottom-Back
-                    { {pos.x - size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f}, texIndex},
-                    { {pos.x - size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {-1.0f, -1.0f, 1.0f}, {1.0f, 0.0f}, texIndex},
-                    { {pos.x - size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {-1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, texIndex},
-                    { {pos.x - size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f}, texIndex},
-                    { {pos.x + size, pos.y - size, pos.z - size}, {color.r, color.g, color.b, color.a}, {1.0f, -1.0f, -1.0f}, {1.0f, 0.0f}, texIndex},
-                    { {pos.x + size, pos.y - size, pos.z + size}, {color.r, color.g, color.b, color.a}, {1.0f, -1.0f, 1.0f}, {0.0f, 0.0f}, texIndex},
-                    { {pos.x + size, pos.y + size, pos.z + size}, {color.r, color.g, color.b, color.a}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, texIndex},
-                    { {pos.x + size, pos.y + size, pos.z - size}, {color.r, color.g, color.b, color.a}, {1.0f, 1.0f, -1.0f}, {1.0f, 1.0f}, texIndex}};
+            { {pos.x - size, pos.y - size, pos.z - size}, {-1.0f, -1.0f, -1.0f}, tangentY, {0.0f, 0.0f}, texIndex},
+            { {pos.x - size, pos.y - size, pos.z + size}, {-1.0f, -1.0f,  1.0f}, tangentY, {1.0f, 0.0f}, texIndex},
+            { {pos.x - size, pos.y + size, pos.z + size}, {-1.0f,  1.0f,  1.0f}, tangentY, {1.0f, 1.0f}, texIndex},
+            { {pos.x - size, pos.y + size, pos.z - size}, {-1.0f,  1.0f, -1.0f}, tangentY, {0.0f, 1.0f}, texIndex},
+            { {pos.x + size, pos.y - size, pos.z - size}, { 1.0f, -1.0f, -1.0f}, -tangentY, {1.0f, 0.0f}, texIndex},
+            { {pos.x + size, pos.y - size, pos.z + size}, { 1.0f, -1.0f,  1.0f}, -tangentY, {0.0f, 0.0f}, texIndex},
+            { {pos.x + size, pos.y + size, pos.z + size}, { 1.0f,  1.0f,  1.0f}, -tangentY, {0.0f, 1.0f}, texIndex},
+            { {pos.x + size, pos.y + size, pos.z - size}, { 1.0f,  1.0f, -1.0f}, -tangentY, {1.0f, 1.0f}, texIndex}
+    };
 }
 
 vector<Index> Cube::o_getIndicies()
 {
-    return
-    {
-            {0}, {1}, {2},  {0}, {2}, {3},  // Left face
-            {4}, {7}, {6},  {4}, {6}, {5},  // Right face
-            {0}, {4}, {5},  {0}, {5}, {1},  // Bottom face
-            {2}, {6}, {7},  {2}, {7}, {3},  // Top face
-            {0}, {3}, {7},  {0}, {7}, {4},  // Back face
-            {1}, {5}, {6},  {1}, {6}, {2}   // Front face
+    return {
+            {0}, {1}, {2}, {0}, {2}, {3},  // Left face
+            {4}, {7}, {6}, {4}, {6}, {5},  // Right face
+            {0}, {4}, {5}, {0}, {5}, {1},  // Bottom face
+            {2}, {6}, {7}, {2}, {7}, {3},  // Top face
+            {0}, {3}, {7}, {0}, {7}, {4},  // Back face
+            {1}, {5}, {6}, {1}, {6}, {2}   // Front face
     };
 }

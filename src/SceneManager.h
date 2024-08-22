@@ -6,7 +6,7 @@
 #include "../vendor/perlin/PerlinNoise.hpp"
 #include "Camera.h"
 #include "map/ChunkManager.h"
-#include "models/OBJLoader.h"
+#include "util/OBJLoader.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../vendor/glm/gtx/string_cast.hpp"

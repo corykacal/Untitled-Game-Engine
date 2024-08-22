@@ -45,5 +45,5 @@ class Renderer
         static void SetUpIndexBuffer();
         static void SetUpTextures();
 
-        static Texture* LoadTexture(const string& filepath);
+        static Texture* LoadTexture(const string& filepath, Texture::TextureType type);
 };

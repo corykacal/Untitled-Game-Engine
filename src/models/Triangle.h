@@ -13,10 +13,11 @@ public:
     : Model()
     {
         glm::vec3 normal = calculateNormal(vertex1, vertex2, vertex3);
+        glm::vec3 tangent = calculateTangent(vertex1, vertex2, vertex3, {0,0}, {0,1}, {1,0});
         verticies = {
-                {vertex1, color, normal, {0, 0}, 0},
-                {vertex2, color, normal, {0, 1}, 0},
-                {vertex3, color, normal, {1, 0}, 0}
+                {vertex1, normal, tangent, {0, 0}, 0},
+                {vertex2, normal, tangent, {0, 1}, 0},
+                {vertex3, normal, tangent, {1, 0}, 0}
             };
         doubleSided = false;
     }

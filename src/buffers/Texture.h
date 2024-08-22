@@ -14,7 +14,12 @@ private:
     int m_Width, m_Height, m_BPP;
 
 public:
-    Texture(const std::string& path);
+    enum TextureType
+    {
+        STANDARD = 0, DISPLACEMENT = 0, NORMAL = 1
+    };
+
+    Texture(const std::string& path, TextureType type);
     ~Texture();
 
     void Bind(unsigned int slot = 0) const;
@@ -23,4 +28,5 @@ public:
 
     inline int GetWidth() const { return m_Width; }
     inline int GetHeight() const { return m_Height; }
+
 };

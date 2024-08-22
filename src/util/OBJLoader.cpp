@@ -78,8 +78,7 @@ void OBJLoader::processVertexData(const std::string& vertexData, OBJData& data) 
     vertex.Position = data.vertices[indices[0]];
     vertex.TexCoords = (indices[1] != -1) ? data.uvs[indices[1]] : glm::vec2(0.0f, 0.0f);
     vertex.Normal = (indices[2] != -1) ? data.normals[indices[2]] : glm::vec3(0.0f, 1.0f, 0.0f);
-    vertex.Color = glm::vec4(1.0f);
-    vertex.TexIndex = 0.0f;
+    vertex.TexIndex = 1.0f;
 
     data.vertexData.push_back(vertex);
 }

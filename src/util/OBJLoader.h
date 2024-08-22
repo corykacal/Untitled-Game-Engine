@@ -7,9 +7,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "OBJModel.h"
+#include "../models/OBJModel.h"
 #include "../util/FileHelper.h"
-#include "Model.h"
+#include "../models/Model.h"
 #include "../../vendor/glm/vec4.hpp"
 #include "../../vendor/glm/vec3.hpp"
 #include "../../vendor/glm/vec2.hpp"

@@ -10,15 +10,14 @@
 
 class Square : public Model {
 public:
-    Square(float size, glm::vec3 pos, glm::vec4 color):
-    Model(), size(size), pos(pos), color(color), doubleSided(false)
+    Square(float size, glm::vec3 pos, float texIndex):
+    Model(), size(size), pos(pos), texIndex(texIndex), doubleSided(true)
     {
     }
 
 private:
     float size;
     glm::vec3 pos;
-    glm::vec4 color;
 
     bool doubleSided;
     float texIndex;

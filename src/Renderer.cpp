@@ -25,7 +25,7 @@ void Renderer::Init() {
     SetUpShader();
     VertexBufferLayout layout;
     layout.AddFloat(3);
-    layout.AddFloat(4);
+    layout.AddFloat(3);
     layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
@@ -112,13 +112,17 @@ void Renderer::SetUpTextures() {
 
     s_Data.shader->SetUniform1iv("u_Textures", MaxTextures, samplers);
 
-    LoadTexture("../res/texture/grass.png");
-    LoadTexture("../res/texture/rock.png");
+    LoadTexture("../res/texture/grass.png", Texture::NORMAL);
+    LoadTexture("../res/texture/rock.png", Texture::NORMAL);
+    LoadTexture("../res/texture/grassnormal.png", Texture::NORMAL);
+    LoadTexture("../res/texture/rocknormal.png", Texture::NORMAL);
+    LoadTexture("../res/texture/grassdisplacement.png", Texture::DISPLACEMENT);
+    LoadTexture("../res/texture/rockdisplacement.png", Texture::DISPLACEMENT);
 }
 
-Texture* Renderer::LoadTexture(const string &filepath)
+Texture* Renderer::LoadTexture(const string &filepath, Texture::TextureType type)
 {
-    Texture* texture = new Texture(filepath);
+    Texture* texture = new Texture(filepath, type);
     texture->Bind(s_Data.TextureSlotIndex);
     s_Data.TextureSlotIndex++;
     return texture;
