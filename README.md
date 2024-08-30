@@ -22,7 +22,7 @@ Things I want to do and make sense but am kicking down the road:
  - Any kind of gameplay at all
 
 Parallax rock hills
-![hills](readmeResources/parallaxrockhills.png)
+![hills](readmeResources/rockcel.png)
 
 First attempt at voxel parallaxing
 
@@ -30,7 +30,7 @@ First attempt at voxel parallaxing
 
 Some hills with lighting:
 
-![picture of perlin noise grass](readmeResources/grassyhills.png)
+![picture of perlin noise grass](readmeResources/grasscel.png)
 
 Some hills with funny squares:
 
