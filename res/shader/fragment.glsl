@@ -16,15 +16,15 @@ uniform vec3 u_LightPosition;
 uniform vec3 u_LightColor;
 uniform vec3 u_CameraPos;
 
-// Global variables
 const float g_ParallaxEndDistance = 15.0f;
-const float g_HeightScale = 0.09f; // Slightly increased for more depth
-const float g_GridSize = 1.0f; // Adjust based on your grid size
+const float g_HeightScale = 0.09f;
+const float g_GridSize = 1.0f;
+const int CelShadingLayersDiff = 6;
 
 vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, float distanceFactor)
 {
     float heightScale = g_HeightScale * (1.0 - distanceFactor);
-    float numLayers = mix(32.0, 16.0, distanceFactor); // Increased minimum layers
+    float numLayers = mix(32.0, 16.0, distanceFactor);
     float layerDepth = 1.0 / numLayers;
     float currentLayerDepth = 0.0;
     vec2 P = viewDir.xy / viewDir.z * heightScale;
@@ -41,6 +41,20 @@ vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, float distanceFactor)
     }
 
     return currentTexCoords;
+}
+
+float celShade(float intensity, int layers)
+{
+    float celIntensity = 0.0;
+    for (int i = 0; i < layers; i++)
+    {
+        float threshold = float(i) / float(layers);
+        if (intensity > threshold)
+        {
+            celIntensity = threshold + (1.0 / float(layers));
+        }
+    }
+    return celIntensity;
 }
 
 void main()
@@ -68,9 +82,11 @@ void main()
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 4.0);
 
+    // Apply cel shading
+    diff = celShade(diff, CelShadingLayersDiff);
+
     // Combined lighting
-    vec3 lighting = u_AmbientLightColor * u_AmbientLightStrength +
-    u_LightColor * (diff + 0.5 * spec);
+    vec3 lighting = u_AmbientLightColor * u_AmbientLightStrength + u_LightColor * (diff + 0.5 * spec);
 
     color.rgb *= lighting;
 
