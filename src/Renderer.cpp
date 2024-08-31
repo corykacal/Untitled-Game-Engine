@@ -12,8 +12,7 @@ struct TextureSlot
 
 struct RendererData
 {
-    DynamicBuffer* DynamicBuffer = nullptr;
-    Shader* shader = nullptr;
+    DynamicBuffer* ModelBuffer = nullptr;
 
     std::array<GLuint, MaxTextures> TextureSlots;
     uint32_t TextureSlotIndex = 1;
@@ -22,75 +21,83 @@ struct RendererData
 static RendererData s_Data;
 
 void Renderer::Init() {
-    SetUpShader();
     VertexBufferLayout layout;
     layout.AddFloat(3);
     layout.AddFloat(3);
     layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
-    s_Data.DynamicBuffer = new DynamicBuffer(MaxBufferSize, layout);
+    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/vertex.glsl", "../res/shader/fragment.glsl");
     SetUpTextures();
-}
-
-void Renderer::Clear()
-{
-        GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
+    //textures can be used by any shader.
+    //make dynamic buffer take a shader path too and make the shader. then just make whatever kind of shaders you want in the renderer here
+    //s_Data.SkyBoxBuffer = new ModelBuffer(smol, layout, shaders)
+    //list of all buffers? draw each one?
 }
 
 void Renderer::Shutdown()
 {
-    delete s_Data.DynamicBuffer;
+    delete s_Data.ModelBuffer;
 }
 
 void Renderer::Draw()
 {
-    s_Data.shader->Bind();
-    s_Data.DynamicBuffer->Draw();
+    GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
+    s_Data.ModelBuffer->Draw();
 }
 
 void Renderer::AddModel(Model *model)
 {
-    s_Data.DynamicBuffer->AddModel(model);
+    s_Data.ModelBuffer->AddModel(model);
 }
 
 void Renderer::DeleteModel(Model *model)
 {
-    s_Data.DynamicBuffer->DeleteModel(model);
+    s_Data.ModelBuffer->DeleteModel(model);
 }
 
-void Renderer::SetUniform1i(const string &name, GLint value)
+void Renderer::SetMVP(const glm::mat4& matrix)
 {
-    s_Data.shader->SetUniform1i(name, value);
+    s_Data.ModelBuffer->GetShader().SetUniformMat4f("u_MVP", matrix);
+    //skybox too
 }
 
-void Renderer::SetUniform1f(const string &name, float value)
+void Renderer::SetCameraPos(const glm::vec3& vector)
 {
-    s_Data.shader->SetUniform1f(name, value);
+    s_Data.ModelBuffer->GetShader().SetUniform3fv("u_CameraPos", vector);
+    //skybox too
 }
 
-void Renderer::SetUniform3fv(string name, const glm::vec3& vector)
+void Renderer::SetLightPosition(const glm::vec3& vector)
 {
-    s_Data.shader->SetUniform3fv(name, vector);
+    s_Data.ModelBuffer->GetShader().SetUniform3fv("u_LightPosition", vector);
 }
 
-void Renderer::SetUniform4fv(string name, const glm::vec4& vector)
+void Renderer::SetLightColor(const glm::vec3& vector)
 {
-    s_Data.shader->SetUniform4fv(name, vector);
+    s_Data.ModelBuffer->GetShader().SetUniform3fv("u_LightColor", vector);
 }
 
-void Renderer::SetUniformMat4f(string name, const glm::mat4 &matrix)
+void Renderer::SetAmbientLightColor(const glm::vec3& vector)
 {
-    s_Data.shader->SetUniformMat4f(name, matrix);
+    s_Data.ModelBuffer->GetShader().SetUniform3fv("u_AmbientLightColor", vector);
+    //skybox too
 }
 
-void Renderer::SetUpShader() {
-    s_Data.shader = new Shader("../res/shader/vertex.glsl", "../res/shader/fragment.glsl");
-    s_Data.shader->Bind();
+void Renderer::SetAmbientLightStrength(float value)
+{
+    s_Data.ModelBuffer->GetShader().SetUniform1f("u_AmbientLightStrength", value);
+    //skybox too
+}
+
+void Renderer::SetFogDistance(int value)
+{
+    s_Data.ModelBuffer->GetShader().SetUniform1i("u_FogDistance", value);
 }
 
 void Renderer::SetUpTextures() {
-    s_Data.shader->Bind();
+
+    s_Data.ModelBuffer->GetShader();
 
     GLuint secondColor;
     glGenTextures(1, &secondColor);
@@ -110,7 +117,7 @@ void Renderer::SetUpTextures() {
     memset(samplers, 0, sizeof(samplers));
     for(int i = 0; i < MaxTextures; ++i) samplers[i] = i;
 
-    s_Data.shader->SetUniform1iv("u_Textures", MaxTextures, samplers);
+    s_Data.ModelBuffer->GetShader().SetUniform1iv("u_Textures", MaxTextures, samplers);
 
     LoadTexture("../res/texture/grass.png", Texture::NORMAL);
     LoadTexture("../res/texture/rock.png", Texture::NORMAL);

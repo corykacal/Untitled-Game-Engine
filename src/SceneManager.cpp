@@ -11,7 +11,7 @@ SceneManager* SceneManager::instance{nullptr};
 
 SceneManager::SceneManager() {
     Renderer::Init();
-    Renderer::SetUniform1i("u_FogDistance", 100);
+    Renderer::SetFogDistance(100);
     ChunkManager::Init();
     camera = &Camera::init(1440, 900);
     int chunkdistance = 4;
@@ -36,11 +36,11 @@ SceneManager::SceneManager() {
     Renderer::AddModel(new Square(3, {19, 10, -20}, 1.0f));
     Renderer::AddModel(new Square(3, {22, 10, -20}, 1.0f));
     Renderer::AddModel(new Square(3, {25, 10, -20}, 1.0f));
-    Renderer::SetUniform3fv("u_LightColor", sunColor);
-    Renderer::SetUniform3fv("u_LightPosition", sunPos);
+    Renderer::SetLightColor(sunColor);
+    Renderer::SetLightPosition(sunPos);
     Renderer::AddModel(new Cube(7, sunPos, sunColor));
-    Renderer::SetUniform3fv("u_AmbientLightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    Renderer::SetUniform1f("u_AmbientLightStrength", 0.3f);
+    Renderer::SetAmbientLightColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    Renderer::SetAmbientLightStrength(0.3f);
 }
 
 SceneManager & SceneManager::init() {
@@ -65,9 +65,8 @@ std::list<Model*> SceneManager::getScene() {
 }
 
 void SceneManager::Compile() {
-    Renderer::SetUniformMat4f("u_MVP", camera->GetMVP());
-    Renderer::SetUniform3fv("u_CameraPos", camera->getCameraPosition());
-    Renderer::Clear();
+    Renderer::SetMVP(camera->GetMVP());
+    Renderer::SetCameraPos(camera->getCameraPosition());
     Renderer::Draw();
 }
 

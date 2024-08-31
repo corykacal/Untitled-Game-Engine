@@ -23,11 +23,13 @@ class Renderer
         static void AddModel(Model* model);
         static void DeleteModel(Model* model);
 
-        static void SetUniform1i(const std::string& name, int value);
-        static void SetUniform1f(const std::string& name, float value);
-        static void SetUniform3fv(string name, const glm::vec3& vector);
-        static void SetUniform4fv(string name, const glm::vec4& vector);
-        static void SetUniformMat4f(string name, const glm::mat4& matrix);
+        static void SetMVP(const glm::mat4& matrix);
+        static void SetCameraPos(const glm::vec3& vector);
+        static void SetLightPosition(const glm::vec3& vector);
+        static void SetLightColor(const glm::vec3& vector);
+        static void SetAmbientLightColor(const glm::vec3& vector);
+        static void SetAmbientLightStrength(float value);
+        static void SetFogDistance(int value);
 
         struct Stats
         {
@@ -39,11 +41,6 @@ class Renderer
         static void ResetStats();
 
     private:
-        static void SetUpVertexArray();
-        static void SetUpVertexBuffer();
-        static void SetUpShader();
-        static void SetUpIndexBuffer();
         static void SetUpTextures();
-
         static Texture* LoadTexture(const string& filepath, Texture::TextureType type);
 };

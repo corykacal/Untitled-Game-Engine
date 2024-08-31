@@ -1,8 +1,10 @@
 #include "../debug/Debug.h"
 #include "DynamicBuffer.h"
 
-DynamicBuffer::DynamicBuffer(unsigned int size, VertexBufferLayout layout)
-: m_dynamicVB(DynamicVertexBuffer(size)),
+DynamicBuffer::DynamicBuffer(unsigned int size, VertexBufferLayout layout,
+                             const std::string& vertexShader, const std::string& fragmentShader)
+: m_shader(vertexShader, fragmentShader),
+  m_dynamicVB(DynamicVertexBuffer(size)),
   m_vertexArray(layout),
   m_dynamicIB(DynamicIndexBuffer(size)),
   m_MaxSize(size)
@@ -19,20 +21,29 @@ DynamicBuffer::~DynamicBuffer()
 
 void DynamicBuffer::Bind() const
 {
+    m_shader.Bind();
     m_dynamicVB.Bind();
     m_dynamicIB.Bind();
 }
 
 void DynamicBuffer::Unbind() const
 {
+    m_shader.Unbind();
     m_dynamicVB.Unbind();
     m_dynamicIB.Unbind();
 }
 
 void DynamicBuffer::Draw() const
 {
+    m_shader.Bind();
     m_dynamicVB.Draw();
     m_dynamicIB.Draw();
+}
+
+Shader DynamicBuffer::GetShader()
+{
+    m_shader.Bind();
+    return m_shader;
 }
 
 void DynamicBuffer::AddModel(Model *model)

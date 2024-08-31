@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 
 layout(location = 0) out vec4 color;
 
@@ -20,6 +20,7 @@ const float g_ParallaxEndDistance = 15.0f;
 const float g_HeightScale = 0.09f;
 const float g_GridSize = 1.0f;
 const int CelShadingLayersDiff = 6;
+const int CelShadingLayersSpec = 2;
 
 vec2 parallaxMapping(vec2 texCoords, vec3 viewDir, float distanceFactor)
 {
@@ -80,13 +81,13 @@ void main()
     vec3 lightDir = normalize(u_LightPosition - v_Position);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 4.0);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 3.0);
 
     // Apply cel shading
-    diff = celShade(diff, CelShadingLayersDiff);
+    float specdiff = celShade(diff, CelShadingLayersDiff);
 
     // Combined lighting
-    vec3 lighting = u_AmbientLightColor * u_AmbientLightStrength + u_LightColor * (diff + 0.5 * spec);
+    vec3 lighting = u_AmbientLightColor * u_AmbientLightStrength + u_LightColor * (0.7f * specdiff + 0.5f * spec + 0.4f * diff);
 
     color.rgb *= lighting;
 

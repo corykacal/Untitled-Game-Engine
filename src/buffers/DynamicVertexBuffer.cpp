@@ -25,6 +25,7 @@ void DynamicVertexBuffer::Unbind() const
 void DynamicVertexBuffer::Draw() const
 {
     Bind();
+    //Only sub data if dirty???
     GLCall( glBufferSubData(GL_ARRAY_BUFFER, 0, m_VertexBuffer.size()*sizeof(m_VertexBuffer[0]), m_VertexBuffer.data()) );
 }
 
