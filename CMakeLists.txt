@@ -35,7 +35,7 @@ add_executable(untitled ${sources} ${outsideSources}
         src/util/OBJLoader.h
         src/models/OBJModel.h
         src/util/FileHelper.h
-        src/buffers/DynamicSkyBoxBuffer.cpp)
+        src/buffers/DynamicSkyBoxBuffer.h)
 
 
 # glfw

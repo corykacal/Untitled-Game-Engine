@@ -65,7 +65,8 @@ std::list<Model*> SceneManager::getScene() {
 }
 
 void SceneManager::Compile() {
-    Renderer::SetMVP(camera->GetMVP());
+    Renderer::SetView(camera->GetView());
+    Renderer::SetProjection(camera->GetProjection());
     Renderer::SetCameraPos(camera->getCameraPosition());
     Renderer::Draw();
 }

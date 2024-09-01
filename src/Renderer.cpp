@@ -13,6 +13,7 @@ struct TextureSlot
 struct RendererData
 {
     DynamicBuffer* ModelBuffer = nullptr;
+    DynamicBuffer* SkyboxBuffer = nullptr;
 
     std::array<GLuint, MaxTextures> TextureSlots;
     uint32_t TextureSlotIndex = 1;
@@ -27,7 +28,9 @@ void Renderer::Init() {
     layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
-    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/vertex.glsl", "../res/shader/fragment.glsl");
+    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/world.vert", "../res/shader/world.frag");
+    s_Data.SkyboxBuffer = new DynamicSkyBoxBuffer(MaxBufferSize, layout, "../res/shader/skybox.vert", "../res/shader/skybox.frag");
+    s_Data.SkyboxBuffer->AddModel(new Cube(1, {0.0f, 0.0f, 0.0f}, 2.0f));
     SetUpTextures();
     //textures can be used by any shader.
     //make dynamic buffer take a shader path too and make the shader. then just make whatever kind of shaders you want in the renderer here
@@ -38,11 +41,14 @@ void Renderer::Init() {
 void Renderer::Shutdown()
 {
     delete s_Data.ModelBuffer;
+    delete s_Data.SkyboxBuffer;
 }
 
 void Renderer::Draw()
 {
     GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
+
+    s_Data.SkyboxBuffer->Draw();
     s_Data.ModelBuffer->Draw();
 }
 
@@ -56,16 +62,21 @@ void Renderer::DeleteModel(Model *model)
     s_Data.ModelBuffer->DeleteModel(model);
 }
 
-void Renderer::SetMVP(const glm::mat4& matrix)
+void Renderer::SetView(const glm::mat4& matrix)
 {
-    s_Data.ModelBuffer->GetShader().SetUniformMat4f("u_MVP", matrix);
-    //skybox too
+    s_Data.ModelBuffer->GetShader().SetUniformMat4f("u_View", matrix);
+    s_Data.SkyboxBuffer->GetShader().SetUniformMat4f("u_View", matrix);
+}
+
+void Renderer::SetProjection(const glm::mat4& matrix)
+{
+    s_Data.ModelBuffer->GetShader().SetUniformMat4f("u_Projection", matrix);
+    s_Data.SkyboxBuffer->GetShader().SetUniformMat4f("u_Projection", matrix);
 }
 
 void Renderer::SetCameraPos(const glm::vec3& vector)
 {
     s_Data.ModelBuffer->GetShader().SetUniform3fv("u_CameraPos", vector);
-    //skybox too
 }
 
 void Renderer::SetLightPosition(const glm::vec3& vector)
@@ -81,13 +92,11 @@ void Renderer::SetLightColor(const glm::vec3& vector)
 void Renderer::SetAmbientLightColor(const glm::vec3& vector)
 {
     s_Data.ModelBuffer->GetShader().SetUniform3fv("u_AmbientLightColor", vector);
-    //skybox too
 }
 
 void Renderer::SetAmbientLightStrength(float value)
 {
     s_Data.ModelBuffer->GetShader().SetUniform1f("u_AmbientLightStrength", value);
-    //skybox too
 }
 
 void Renderer::SetFogDistance(int value)
@@ -95,10 +104,8 @@ void Renderer::SetFogDistance(int value)
     s_Data.ModelBuffer->GetShader().SetUniform1i("u_FogDistance", value);
 }
 
-void Renderer::SetUpTextures() {
-
-    s_Data.ModelBuffer->GetShader();
-
+void Renderer::SetUpTextures()
+{
     GLuint secondColor;
     glGenTextures(1, &secondColor);
     glBindTexture(GL_TEXTURE_2D, secondColor);

@@ -48,8 +48,12 @@ void Camera::SetPosition(float x, float y) {
     Camera::y = y;
 }
 
-glm::mat4 Camera::GetMVP() {
-    return proj * view;
+glm::mat4 Camera::GetView() {
+    return view;
+}
+
+glm::mat4 Camera::GetProjection() {
+    return proj;
 }
 
 void Camera::SetWindowDimensions(u_int width, u_int height) {
@@ -75,8 +79,8 @@ float Camera::getYPos() const {
 void Camera::mouse_callback(GLFWwindow* window, float xpos, float ypos) {
     if (firstMouse)
     {
-        lastX = xpos;
-        lastY = ypos;
+        lastX = 0.0f;
+        lastY = 0.0f;
         firstMouse = false;
     }
     float xoffset = xpos - lastX;

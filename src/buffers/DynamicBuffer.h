@@ -30,13 +30,13 @@ class DynamicBuffer
 
     public:
         explicit DynamicBuffer(unsigned int size, VertexBufferLayout layout,
-                               const std::string& fragmentShader, const std::string& vertexShader);
+                               const std::string& vertexShader, const std::string& fragmentShader);
         ~DynamicBuffer();
 
         void Bind() const;
         void Unbind() const;
-        void Draw() const;
-        Shader GetShader();
+        virtual void Draw();
+        Shader& GetShader();
 
         void AddModel(Model* model);
         void DeleteModel(Model* model);

@@ -6,21 +6,22 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec2 a_TexCoord;
 layout(location = 4) in float a_TexIndex;
 
+uniform mat4 u_Projection;
+uniform mat4 u_View;
+uniform vec3 u_CameraPos;
+
 out vec3 v_Position;
 flat out mat3 v_TBN;
 out vec2 v_TexCoord;
 flat out float v_TexIndex;
 out float v_Distance;
 
-uniform mat4 u_MVP;
-uniform vec3 u_CameraPos;
-
 //don't have "model" at the moment. model is transform, rotation, scale
 //Add model uniform list that is updated for memory saving
 
 void main()
 {
-    gl_Position = u_MVP * a_Position;
+    gl_Position = u_Projection * u_View * a_Position;
     v_Position = a_Position.xyz;
     v_TexCoord = a_TexCoord;
     v_TexIndex = a_TexIndex;

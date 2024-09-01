@@ -22,25 +22,23 @@ DynamicBuffer::~DynamicBuffer()
 void DynamicBuffer::Bind() const
 {
     m_shader.Bind();
-    m_dynamicVB.Bind();
-    m_dynamicIB.Bind();
+    m_vertexArray.Bind();
 }
 
 void DynamicBuffer::Unbind() const
 {
     m_shader.Unbind();
-    m_dynamicVB.Unbind();
-    m_dynamicIB.Unbind();
+    m_vertexArray.Unbind();
 }
 
-void DynamicBuffer::Draw() const
+void DynamicBuffer::Draw()
 {
-    m_shader.Bind();
+    Bind();
     m_dynamicVB.Draw();
     m_dynamicIB.Draw();
 }
 
-Shader DynamicBuffer::GetShader()
+Shader& DynamicBuffer::GetShader()
 {
     m_shader.Bind();
     return m_shader;

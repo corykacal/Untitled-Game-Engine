@@ -41,7 +41,8 @@ public:
 
     void SetWindowDimensions(u_int width, u_int height);
     void SetPosition(float x, float y);
-    glm::mat4 GetMVP();
+    glm::mat4 GetView();
+    glm::mat4 GetProjection();
     glm::vec3 getCameraPosition();
 
     float getXPos() const;

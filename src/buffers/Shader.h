@@ -26,6 +26,8 @@ class Shader
         void Bind() const;
         void Unbind() const;
 
+        unsigned int GetID() const;
+
         // Set uniforms
         void SetUniform1i(const std::string& name, int value);
         void SetUniform1iv(const std::string &name, int value, GLint* data);

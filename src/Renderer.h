@@ -5,6 +5,7 @@
 #include "buffers/Shader.h"
 #include "buffers/Texture.h"
 #include "buffers/DynamicBuffer.h"
+#include "buffers/DynamicSkyBoxBuffer.h"
 #include "models/Model.h"
 #include "models/Cube.h"
 #include "util/ByteHelper.h"
@@ -23,7 +24,8 @@ class Renderer
         static void AddModel(Model* model);
         static void DeleteModel(Model* model);
 
-        static void SetMVP(const glm::mat4& matrix);
+        static void SetView(const glm::mat4& matrix);
+        static void SetProjection(const glm::mat4& matrix);
         static void SetCameraPos(const glm::vec3& vector);
         static void SetLightPosition(const glm::vec3& vector);
         static void SetLightColor(const glm::vec3& vector);

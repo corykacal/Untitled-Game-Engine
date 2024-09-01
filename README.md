@@ -21,16 +21,16 @@ Things I want to do and make sense but am kicking down the road:
  - Actual game things like collision
  - Any kind of gameplay at all
 
+Some hills with lighting:
+
+![picture of perlin noise grass](readmeResources/skyboxhills.png)
+
 Parallax rock hills
 ![hills](readmeResources/rockcel.png)
 
 First attempt at voxel parallaxing
 
 ![parallax](readmeResources/voxelparallax.png)
-
-Some hills with lighting:
-
-![picture of perlin noise grass](readmeResources/grasscel.png)
 
 Some hills with funny squares:
 
