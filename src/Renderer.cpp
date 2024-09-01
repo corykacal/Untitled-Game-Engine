@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-static const size_t MaxBufferSize = BytesHelper::Megabyte(64);
+static const size_t MaxBufferSize = BytesHelper::Megabyte(256);
 static const size_t MaxTextures = 16;
 
 struct TextureSlot
@@ -28,7 +28,7 @@ void Renderer::Init() {
     layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
-    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/world.vert", "../res/shader/world.frag");
+    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/simple.vert", "../res/shader/simple.frag");
     s_Data.SkyboxBuffer = new DynamicSkyBoxBuffer(MaxBufferSize, layout, "../res/shader/skybox.vert", "../res/shader/skybox.frag");
     s_Data.SkyboxBuffer->AddModel(new Cube(1, {0.0f, 0.0f, 0.0f}, 2.0f));
     SetUpTextures();
@@ -48,8 +48,8 @@ void Renderer::Draw()
 {
     GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
 
-    s_Data.SkyboxBuffer->Draw();
     s_Data.ModelBuffer->Draw();
+    s_Data.SkyboxBuffer->Draw();
 }
 
 void Renderer::AddModel(Model *model)

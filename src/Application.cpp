@@ -6,9 +6,7 @@
 
 #include <iostream>
 
-#include "Renderer.h"
 #include "SceneManager.h"
-#include "models/Quadrilateral.h"
 
 
 Renderer renderer;
