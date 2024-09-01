@@ -28,7 +28,7 @@ void Renderer::Init() {
     layout.AddFloat(3);
     layout.AddFloat(2);
     layout.AddFloat(1);
-    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/world.vert", "../res/shader/world.frag");
+    s_Data.ModelBuffer = new DynamicBuffer(MaxBufferSize, layout, "../res/shader/simple.vert", "../res/shader/simple.frag");
     s_Data.SkyboxBuffer = new DynamicSkyBoxBuffer(MaxBufferSize, layout, "../res/shader/skybox.vert", "../res/shader/skybox.frag");
     s_Data.SkyboxBuffer->AddModel(new Cube(1, {0.0f, 0.0f, 0.0f}, 2.0f));
     SetUpTextures();

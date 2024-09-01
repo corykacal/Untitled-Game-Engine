@@ -10,7 +10,7 @@
 
 struct ChunkData
 {
-    ushort ChunkSize = 64;
+    ushort ChunkSize = 20;
 };
 
 struct NoiseData
@@ -18,7 +18,7 @@ struct NoiseData
     float Frequency = 0.01f;
     ushort Amplitude = 100;
     int Octaves = 3;
-    siv::PerlinNoise::seed_type Seed = 1499926u;
+    siv::PerlinNoise::seed_type Seed = 2592826u;
 };
 
 static NoiseData s_NoiseData;
@@ -36,40 +36,44 @@ void ChunkManager::Init()
 }
 
 //TODO: add chunk coords
-vector<Quadrilateral *> ChunkManager::GetOrCreateChunk(glm::vec2 coords) {
+vector<Cube *> ChunkManager::GetOrCreateChunk(glm::vec3 coords) {
     if(chunkMap.contains(coords)) {
         return chunkMap[coords].quads;
     }
-    vector<Quadrilateral*> quads = {};
+    vector<Cube*> cubes = {};
     for(int i = 0; i<s_ChunkData.ChunkSize; i++) {
         for(int j=0; j<s_ChunkData.ChunkSize; j++) {
-            float red = ((float) rand() / (RAND_MAX)) ;
-            float green = ((float) rand() / (RAND_MAX)) ;
-            float blue = ((float) rand() / (RAND_MAX)) ;
+            for(int k=0; k<s_ChunkData.ChunkSize; k++) {
+                float red = ((float) rand() / (RAND_MAX)) ;
+                float green = ((float) rand() / (RAND_MAX)) ;
+                float blue = ((float) rand() / (RAND_MAX)) ;
 
-            int chunkXCoord = coords[0] * s_ChunkData.ChunkSize + i;
-            int chunkZCoord = coords[1] * s_ChunkData.ChunkSize + j;
+                int chunkXCoord = coords[0] * s_ChunkData.ChunkSize + i;
+                int chunkZCoord = coords[1] * s_ChunkData.ChunkSize + j;
+                int chunkYCoord = coords[2] * s_ChunkData.ChunkSize + k;
 
-            glm::vec4 color = {red,green,blue,1.0f};
-            glm::vec3 tlc = GetVertexHeightAt({chunkXCoord,  chunkZCoord});
-            glm::vec3 trc = GetVertexHeightAt({chunkXCoord+1, chunkZCoord});
-            glm::vec3 blc = GetVertexHeightAt({chunkXCoord, chunkZCoord+1});
-            glm::vec3 brc = GetVertexHeightAt({chunkXCoord+1, chunkZCoord+1});
-
-            Quadrilateral* quad = new Quadrilateral(tlc, trc, blc, brc, 1.0f);
-            quads.push_back(quad);
+                glm::vec3 pos = {chunkXCoord, chunkZCoord, chunkYCoord};
+                bool thingAtCoord = ObjectPresentAt(pos);
+                if(thingAtCoord)
+                {
+                    Cube* cube = new Cube(1.0f, pos, 0.0f);
+                    cubes.push_back(cube);
+                }
+            }
         }
     }
-    Chunk newChunk = Chunk{coords, quads, 1};
+    Chunk newChunk = Chunk{coords, cubes, 1};
     chunks.push_back(newChunk);
     chunkMap[coords] = newChunk;
-    return quads;
+    return cubes;
 }
 
-double ChunkManager::GetNoiseAt(glm::vec2 coords) {
-    return Perlin.normalizedOctave2D(coords[0] * s_NoiseData.Frequency,
+bool ChunkManager::ObjectPresentAt(glm::vec3 coords) {
+    double noise = Perlin.normalizedOctave3D(coords[0] * s_NoiseData.Frequency,
                               coords[1] * s_NoiseData.Frequency,
-                              s_NoiseData.Octaves) * s_NoiseData.Amplitude;
+                              coords[2] * s_NoiseData.Frequency,
+                              s_NoiseData.Octaves);
+    return noise > 0.0;
 }
 
 vector<Chunk> ChunkManager::GetDirtyChunks() {
@@ -83,11 +87,6 @@ vector<Chunk> ChunkManager::GetDirtyChunks() {
     return dirtyChunks;
 }
 
-void ChunkManager::AddChunk(glm::vec2 coords) {
+void ChunkManager::AddChunk(glm::vec3 coords) {
     GetOrCreateChunk(coords);
-}
-
-glm::vec3 ChunkManager::GetVertexHeightAt(glm::vec2 coords) {
-    const double brc_noise = GetNoiseAt({coords[0], coords[1]});
-    return {coords[0],brc_noise,coords[1]};
 }

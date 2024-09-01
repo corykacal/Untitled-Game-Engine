@@ -12,6 +12,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../vendor/glm/gtx/hash.hpp"
+#include "../models/Cube.h"
 
 #ifndef UNTITLED_CHUNKMANAGER_H
 #define UNTITLED_CHUNKMANAGER_H
@@ -19,20 +20,20 @@
 struct Chunk
 {
     glm::vec2 coords;
-    vector<Quadrilateral*> quads;
+    vector<Cube*> quads;
     bool dirty;
 };
 
 class ChunkManager {
 public:
     static void Init();
-    static vector<Quadrilateral *> GetOrCreateChunk(glm::vec2 coords);
+    static vector<Cube *> GetOrCreateChunk(glm::vec3 coords);
 
     static vector<Chunk> GetDirtyChunks();
-    static void AddChunk(glm::vec2 coords);
+    static void AddChunk(glm::vec3 coords);
 private:
-    static double GetNoiseAt(glm::vec2 coords);
-    static glm::vec3 GetVertexHeightAt(glm::vec2 coords);
+    static bool ObjectPresentAt(glm::vec3 coords);
+    static glm::vec3 GetVertexHeightAt(glm::vec3 coords);
 };
 
 
