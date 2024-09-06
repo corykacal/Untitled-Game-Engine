@@ -10,7 +10,7 @@
 
 struct ChunkData
 {
-    ushort ChunkSize = 5;
+    ushort ChunkSize = 20;
 };
 
 struct NoiseData
@@ -18,7 +18,7 @@ struct NoiseData
     float Frequency = 0.01f;
     ushort Amplitude = 100;
     int Octaves = 3;
-    siv::PerlinNoise::seed_type Seed = 2522826u;
+    siv::PerlinNoise::seed_type Seed = 8532826u;
 };
 
 static NoiseData s_NoiseData;
@@ -26,7 +26,7 @@ static ChunkData s_ChunkData;
 static siv::PerlinNoise Perlin;
 
 static vector<Chunk> chunks;
-static unordered_map<glm::vec2, Chunk> chunkMap;
+static unordered_map<glm::vec3, Chunk> chunkMap;
 
 void ChunkManager::Init()
 {
@@ -61,34 +61,46 @@ vector<Triangle*> ChunkManager::GenerateTriangles(glm::vec3 pos) {
     vector<int> vertexIndices = GetTriangles(cubeIndex);
     if (vertexIndices.empty()) return {};
 
-    array<glm::vec3, 8> cornerPositions;
-    array<float, 8> cornerValues;
-    for (int i = 0; i < 8; i++) {
-        glm::vec3 offset(i & 1, (i & 2) >> 1, (i & 4) >> 2);
-        cornerPositions[i] = pos + offset;
-        cornerValues[i] = GetNoiseValue(cornerPositions[i]);
-    }
+    array<glm::vec3, 12> edgeMidpoints = {
+            pos + glm::vec3(0.5f, 0.0f, 0.0f),
+            pos + glm::vec3(1.0f, 0.5f, 0.0f),
+            pos + glm::vec3(0.5f, 1.0f, 0.0f),
+            pos + glm::vec3(0.0f, 0.5f, 0.0f),
+            pos + glm::vec3(0.5f, 0.0f, 1.0f),
+            pos + glm::vec3(1.0f, 0.5f, 1.0f),
+            pos + glm::vec3(0.5f, 1.0f, 1.0f),
+            pos + glm::vec3(0.0f, 0.5f, 1.0f),
+            pos + glm::vec3(0.0f, 0.0f, 0.5f),
+            pos + glm::vec3(1.0f, 0.0f, 0.5f),
+            pos + glm::vec3(1.0f, 1.0f, 0.5f),
+            pos + glm::vec3(0.0f, 1.0f, 0.5f)
+    };
 
-    array<glm::vec3, 12> edgeVertices;
-    int edgeMask = GetEdgeMask(cubeIndex);
-    for (int i = 0; i < 12; i++) {
-        if (edgeMask & (1 << i)) {
-            auto [v1, v2] = GetEdgeVertices(i);
-            float t = (0 - cornerValues[v1]) / (cornerValues[v2] - cornerValues[v1]);
-            edgeVertices[i] = cornerPositions[v1] + t * (cornerPositions[v2] - cornerPositions[v1]);
-        }
-    }
-
-    vector<Triangle*> triangles;
+    vector<Triangle *> triangles;
     for (size_t i = 0; i < vertexIndices.size(); i += 3) {
-        glm::vec3 v1 = edgeVertices[vertexIndices[i]];
-        glm::vec3 v2 = edgeVertices[vertexIndices[i + 1]];
-        glm::vec3 v3 = edgeVertices[vertexIndices[i + 2]];
+        glm::vec3 v1 = edgeMidpoints[vertexIndices[i]];
+        glm::vec3 v2 = edgeMidpoints[vertexIndices[i + 1]];
+        glm::vec3 v3 = edgeMidpoints[vertexIndices[i + 2]];
         glm::vec4 color(1.0f); // Set color as needed
         triangles.push_back(new Triangle(v1, v2, v3, color));
     }
 
     return triangles;
+}
+
+uint8_t ChunkManager::GetEdgeIndex(glm::vec3 pos) {
+    static const array<array<int, 3>, 8> corners = {{
+        {0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
+        {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}
+    }};
+
+    uint8_t edgeIndex = 0;
+    for (int i = 0; i < 8; i++) {
+        glm::vec3 cornerPos = pos + glm::vec3(corners[i][0], corners[i][1], corners[i][2]);
+        float noiseValue = GetNoiseValue(cornerPos);
+        edgeIndex |= (noiseValue > 0.0f) << i;
+    }
+    return edgeIndex;
 }
 
 float ChunkManager::GetNoiseValue(glm::vec3 pos) {
@@ -97,25 +109,7 @@ float ChunkManager::GetNoiseValue(glm::vec3 pos) {
             pos.y * s_NoiseData.Frequency,
             pos.z * s_NoiseData.Frequency,
             s_NoiseData.Octaves);
-    return noise - 0.5f; // Adjust threshold as needed
-}
-
-uint8_t ChunkManager::GetEdgeIndex(glm::vec3 coords) {
-    static const std::array<std::array<int, 3>, 8> corners = {{
-        {0,0,0}, {0,1,0}, {1,0,0}, {1,1,0},
-        {0,0,1}, {0,1,1}, {1,0,1}, {1,1,1}
-    }};
-
-    uint8_t edgeIndex = 0;
-    for(auto& corner : corners) {
-        double noise = Perlin.normalizedOctave3D(
-                corner[0] * s_NoiseData.Frequency,
-                corner[1] * s_NoiseData.Frequency,
-                corner[2] * s_NoiseData.Frequency,
-                s_NoiseData.Octaves);
-        edgeIndex = (edgeIndex << 1) | (noise > 0.0);
-    }
-    return edgeIndex;
+    return noise;
 }
 
 vector<Chunk> ChunkManager::GetDirtyChunks() {

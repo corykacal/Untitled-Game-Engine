@@ -48,7 +48,7 @@ void Renderer::Draw()
 {
     GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
 
-    s_Data.SkyboxBuffer->Draw();
+    //s_Data.SkyboxBuffer->Draw();
     s_Data.ModelBuffer->Draw();
 }
 
