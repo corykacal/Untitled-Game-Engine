@@ -1,7 +1,4 @@
 #include "SceneManager.h"
-#include "debug/PerformanceTest.h"
-#include "models/Triangle.h"
-#include "models/Square.h"
 
 SceneManager::~SceneManager() {
     Renderer::Shutdown();
@@ -14,7 +11,7 @@ SceneManager::SceneManager() {
     Renderer::SetFogDistance(100);
     ChunkManager::Init();
     camera = &Camera::init(1440, 900);
-    int chunkdistance = 2;
+    int chunkdistance = 1;
     for(int i=-chunkdistance; i<chunkdistance; i++) {
         for(int j=-chunkdistance; j<chunkdistance; j++) {
             for(int k=-chunkdistance; k<chunkdistance; k++)
@@ -23,7 +20,7 @@ SceneManager::SceneManager() {
     }
     vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
     for(const Chunk& dirtyChunk : dirtyChunks) {
-        for(Cube* quad : dirtyChunk.quads) {
+        for(Triangle* quad : dirtyChunk.triangles) {
             Renderer::AddModel(quad);
         }
     }

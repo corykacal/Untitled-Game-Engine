@@ -3,10 +3,10 @@
 #include "Renderer.h"
 #include "../vendor/glm/glm.hpp"
 #include "../vendor/glm/gtc/matrix_transform.hpp"
-#include "../vendor/perlin/PerlinNoise.hpp"
 #include "Camera.h"
 #include "map/ChunkManager.h"
 #include "util/OBJLoader.h"
+#include "models/Triangle.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../vendor/glm/gtx/string_cast.hpp"

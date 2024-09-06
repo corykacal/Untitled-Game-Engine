@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-static const size_t MaxBufferSize = BytesHelper::Megabyte(64);
+static const size_t MaxBufferSize = BytesHelper::Megabyte(256);
 static const size_t MaxTextures = 16;
 
 struct TextureSlot

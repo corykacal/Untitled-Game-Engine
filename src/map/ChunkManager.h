@@ -3,16 +3,16 @@
 //
 #include <GL/glew.h>
 #include "../models/Model.h"
-#include "../models/Quadrilateral.h"
+#include "../models/Triangle.h"
 #include "../debug/Debug.h"
 #include <iostream>
 #include "../../vendor/perlin/PerlinNoise.hpp"
 #include "../../vendor/glm/vec2.hpp"
 #include <unordered_map>
+#include "MarchingCubesLookupTable.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../vendor/glm/gtx/hash.hpp"
-#include "../models/Cube.h"
 
 #ifndef UNTITLED_CHUNKMANAGER_H
 #define UNTITLED_CHUNKMANAGER_H
@@ -20,20 +20,27 @@
 struct Chunk
 {
     glm::vec2 coords;
-    vector<Cube*> quads;
+    vector<Triangle*> triangles;
     bool dirty;
+};
+
+struct GridCell
+{
+    std::array<glm::vec3, 8> position;
+    std::array<float, 8> value;
 };
 
 class ChunkManager {
 public:
     static void Init();
-    static vector<Cube *> GetOrCreateChunk(glm::vec3 coords);
+    static vector<Triangle *> GetOrCreateChunk(glm::vec3 coords);
 
     static vector<Chunk> GetDirtyChunks();
     static void AddChunk(glm::vec3 coords);
 private:
-    static bool ObjectPresentAt(glm::vec3 coords);
-    static glm::vec3 GetVertexHeightAt(glm::vec3 coords);
+    static float GetNoiseValue(glm::vec3 pos);
+    static vector<Triangle*> GenerateTriangles(glm::vec3 pos);
+    static uint8_t GetEdgeIndex(glm::vec3 coords);
 };
 
 
