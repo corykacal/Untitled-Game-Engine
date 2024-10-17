@@ -1,5 +1,14 @@
 --Untitled Game Engine--
 
+Ubuntu setup:
+1. Install glfw3 
+   - sudo apt-get install libglfw3
+   - sudo apt-get install libglfw3-dev
+2. Install glew
+   - sudo apt-get install libglew-dev
+3. You might not have these things already. Install them
+   - sudo apt-get install cmake build-essential libgl1-mesa-dev
+
 Making an OpenGL game engine in c++ that will feature extensive abstraction from the OpenGL API and many procedural features.
 
 Features:

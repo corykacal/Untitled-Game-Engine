@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cassert>
 
 class FileHelper {
 public:
