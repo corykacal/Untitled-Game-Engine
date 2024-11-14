@@ -33,7 +33,7 @@ Things I want to do and make sense but am kicking down the road:
 
 ## Marching cubes!!!!:
 
-![marching cuebs](readmeResources/simplemarchingcubes.png)
+![marching cuebs](readmeResources/interpolated_cubes.png)
 
 ## Some hills with lighting:
 

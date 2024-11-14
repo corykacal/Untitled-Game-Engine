@@ -34,7 +34,7 @@ void ChunkManager::Init()
        4,         // octaves
        12345      // seed
     );
-    terrain.add(surface);
+    //terrain.add(surface);
     chunks = {};
     chunkMap = {};
 }

@@ -18,7 +18,7 @@ SceneManager::SceneManager() {
     camera = &Camera::init(1440, 900);
 
     vector<future<void>> futures;
-    int chunkdistance = 2;
+    int chunkdistance = 4;
 
     for(int i=-chunkdistance; i<chunkdistance; i++) {
             for(int j=-chunkdistance; j<chunkdistance; j++) {
