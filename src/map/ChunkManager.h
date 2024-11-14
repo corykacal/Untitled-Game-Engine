@@ -1,15 +1,14 @@
 //
 // Created by Cory Kacal on 7/28/24.
 //
-#include <GL/glew.h>
-#include "../models/Model.h"
 #include "../models/Triangle.h"
 #include "../debug/Debug.h"
-#include <iostream>
-#include "../../vendor/perlin/PerlinNoise.hpp"
 #include "../../vendor/glm/vec2.hpp"
-#include <unordered_map>
+#include "../../vendor/glm/vec3.hpp"
 #include "MarchingCubesLookupTable.h"
+#include "generation/PerlinNoiseFunction3D.h"
+#include "generation/PerlinNoiseFunction2D.h"
+#include "generation/TerrainMesh.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../../vendor/glm/gtx/hash.hpp"

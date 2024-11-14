@@ -4,6 +4,7 @@
 
 #include "ChunkManager.h"
 
+
 //Chunk list, with dirty bit
 //chunk struct? or chunk class
 //make chunkmanager instanced, singleton
@@ -13,24 +14,27 @@ struct ChunkData
     ushort ChunkSize = 32;
 };
 
-struct NoiseData
-{
-    float Frequency = 0.01f;
-    ushort Amplitude = 100;
-    int Octaves = 3;
-    siv::PerlinNoise::seed_type Seed = 85112826u;
-};
-
-static NoiseData s_NoiseData;
 static ChunkData s_ChunkData;
-static siv::PerlinNoise Perlin;
-
 static vector<Chunk> chunks;
 static unordered_map<glm::vec3, Chunk> chunkMap;
+static TerrainMesh terrain;
 
 void ChunkManager::Init()
 {
-    Perlin = siv::PerlinNoise{s_NoiseData.Seed};
+    auto caves = std::make_shared<PerlinNoiseFunction3D>(
+       0.007f,      // frequency
+       80,       // amplitude
+       3,         // octaves
+       12345      // seed
+    );
+    terrain.add(caves);
+    auto surface = std::make_shared<PerlinNoiseFunction2D>(
+       0.01f,      // frequency
+       100,       // amplitude
+       4,         // octaves
+       12345      // seed
+    );
+    terrain.add(surface);
     chunks = {};
     chunkMap = {};
 }
@@ -50,16 +54,16 @@ vector<Triangle *> ChunkManager::GetOrCreateChunk(glm::vec3 coords) {
         }
     }
     //cache
-    const auto newChunk = Chunk{coords, triangles, true};
+    Chunk newChunk = Chunk{coords, triangles, true};
     chunks.push_back(newChunk);
     chunkMap[coords] = newChunk;
     return triangles;
 }
 
 vector<Triangle*> ChunkManager::GenerateTriangles(const glm::vec3& pos) {
-    const auto cornerValues = GetCornerValues(pos);
-    const uint8_t cubeIndex = GetEdgeIndex(cornerValues);
-    const int edgeMask = edgeTable[cubeIndex];
+    auto cornerValues = GetCornerValues(pos);
+    uint8_t cubeIndex = GetEdgeIndex(cornerValues);
+    int edgeMask = edgeTable[cubeIndex];
     if (edgeMask == 0) return {};
 
     const vector<int> vertexIndices = GetTriangles(cubeIndex);
@@ -74,8 +78,8 @@ vector<Triangle*> ChunkManager::GenerateTriangles(const glm::vec3& pos) {
     array<glm::vec3, 12> vertices{};
     for (int i = 0; i < 12; i++) {
         if (edgeMask & (1 << i)) {
-            int v1 = edgeToVertex[i][0];
-            int v2 = edgeToVertex[i][1];
+            const int v1 = edgeToVertex[i][0];
+            const int v2 = edgeToVertex[i][1];
             vertices[i] = InterpolateVertex(
                 cornerPositions[v1],
                 cornerPositions[v2],
@@ -103,7 +107,7 @@ vector<float> ChunkManager::GetCornerValues(const glm::vec3 pos) {
     vector<float> cornerValues(8);
     for (int i = 0; i < 8; i++) {
         auto corner = GetCorner(i);
-        const glm::vec3 cornerPos = pos + glm::vec3(corner[0], corner[1], corner[2]);
+        glm::vec3 cornerPos = pos + glm::vec3(corner[0], corner[1], corner[2]);
         cornerValues[i] = GetNoiseValue(cornerPos);
     }
     return cornerValues;
@@ -117,18 +121,15 @@ uint8_t ChunkManager::GetEdgeIndex(const vector<float>& cornerValues) {
     return edgeIndex;
 }
 
-glm::vec3 ChunkManager::InterpolateVertex(const glm::vec3& pos1, const glm::vec3& pos2, const float val1, const float val2) {
+glm::vec3 ChunkManager::InterpolateVertex(const glm::vec3& pos1, const glm::vec3& pos2, float val1, float val2) {
     float t = (0.0f - val1) / (val2 - val1);
     return pos1 + t * (pos2 - pos1);
 }
 
+//TODO: This should be asking TerrainMesh.NoiseAt(coord)
+//TerrainMesh can be made from a mixture of 2d noise and 3d noise, abstract away from this chunk manager class
 float ChunkManager::GetNoiseValue(const glm::vec3 pos) {
-    const double noise = Perlin.normalizedOctave3D(
-            pos.x * s_NoiseData.Frequency,
-            pos.y * s_NoiseData.Frequency,
-            pos.z * s_NoiseData.Frequency,
-            s_NoiseData.Octaves);
-    return noise;
+    return terrain.getValue(pos);
 }
 
 vector<Chunk> ChunkManager::GetDirtyChunks() {
@@ -142,6 +143,6 @@ vector<Chunk> ChunkManager::GetDirtyChunks() {
     return dirtyChunks;
 }
 
-void ChunkManager::AddChunk(const glm::vec3 coords) {
+void ChunkManager::AddChunk(glm::vec3 coords) {
     GetOrCreateChunk(coords);
 }

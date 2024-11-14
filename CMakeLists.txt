@@ -38,7 +38,14 @@ add_executable(untitled ${sources} ${outsideSources}
         src/buffers/DynamicSkyBoxBuffer.h
         src/map/MarchingCubesLookupTable.h
         src/util/ThreadPool.cpp
-        src/util/ThreadPool.h)
+        src/util/ThreadPool.h
+        src/map/generation/TerrainMesh.cpp
+        src/map/generation/TerrainMesh.h
+        src/map/generation/NoiseFunction.h
+        src/map/generation/PerlinNoiseFunction2D.cpp
+        src/map/generation/PerlinNoiseFunction2D.h
+        src/map/generation/PerlinNoiseFunction3D.cpp
+        src/map/generation/PerlinNoiseFunction3D.h)
 
 # glfw
 find_package(glfw3 REQUIRED)
