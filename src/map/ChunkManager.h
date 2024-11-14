@@ -38,9 +38,11 @@ public:
     static vector<Chunk> GetDirtyChunks();
     static void AddChunk(glm::vec3 coords);
 private:
+    static vector<float> GetCornerValues(glm::vec3 pos);
+    static uint8_t GetEdgeIndex(const vector<float>& cornerValues);
+    static glm::vec3 InterpolateVertex(const glm::vec3& pos1, const glm::vec3& pos2, float val1, float val2);
     static float GetNoiseValue(glm::vec3 pos);
-    static vector<Triangle*> GenerateTriangles(glm::vec3 pos);
-    static uint8_t GetEdgeIndex(glm::vec3 coords);
+    static vector<Triangle*> GenerateTriangles(const glm::vec3& pos);
 };
 
 

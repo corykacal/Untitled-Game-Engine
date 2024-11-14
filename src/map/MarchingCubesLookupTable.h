@@ -309,6 +309,21 @@ const std::array<std::vector<int>, 256> triTable = {{
     {}
 }};
 
+const array<array<int, 3>, 8> corners = {{
+    {0, 0, 0}, // 0
+    {1, 0, 0}, // 1
+    {0, 1, 0}, // 2
+    {1, 1, 0}, // 3
+    {0, 0, 1}, // 4
+    {1, 0, 1}, // 5
+    {0, 1, 1}, // 6
+    {1, 1, 1}  // 7
+}};
+
+inline constexpr array<int, 3> GetCorner(int cornerIndex) {
+    return corners[cornerIndex];
+}
+
 inline constexpr std::array<int, 2> GetEdgeVertices(int edgeIndex) {
     return edgeToVertex[edgeIndex];
 }

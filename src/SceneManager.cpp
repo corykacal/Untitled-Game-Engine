@@ -1,23 +1,39 @@
 #include "SceneManager.h"
 
+#include "debug/PerformanceTest.h"
+
 SceneManager::~SceneManager() {
     Renderer::Shutdown();
 }
 
 SceneManager* SceneManager::instance{nullptr};
 
+const unsigned int NUM_THREADS = std::thread::hardware_concurrency();
+ThreadPool pool(NUM_THREADS);
+
 SceneManager::SceneManager() {
     Renderer::Init();
     Renderer::SetFogDistance(100);
     ChunkManager::Init();
     camera = &Camera::init(1440, 900);
+
+    vector<future<void>> futures;
     int chunkdistance = 4;
+
     for(int i=-chunkdistance; i<chunkdistance; i++) {
-        for(int j=-chunkdistance; j<chunkdistance; j++) {
-            for(int k=-chunkdistance; k<chunkdistance; k++)
-            ChunkManager::AddChunk({i,j,k});
-        }
+            for(int j=-chunkdistance; j<chunkdistance; j++) {
+                futures.push_back(pool.enqueue([=]() {
+                    for(int k=-chunkdistance; k<chunkdistance; k++) {
+                        ChunkManager::AddChunk({i,j,k});
+                    }
+                }));
+            }
     }
+
+    for(auto& future : futures) {
+        future.get();
+    }
+
     vector<Chunk> dirtyChunks = ChunkManager::GetDirtyChunks();
     for(const Chunk& dirtyChunk : dirtyChunks) {
         for(Triangle* quad : dirtyChunk.triangles) {

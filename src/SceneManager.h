@@ -10,6 +10,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include "../vendor/glm/gtx/string_cast.hpp"
+#include "util/ThreadPool.h"
 
 #ifndef UNTITLED_SCENEMANAGER_H
 #define UNTITLED_SCENEMANAGER_H

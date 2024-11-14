@@ -36,7 +36,9 @@ add_executable(untitled ${sources} ${outsideSources}
         src/models/OBJModel.h
         src/util/FileHelper.h
         src/buffers/DynamicSkyBoxBuffer.h
-        src/map/MarchingCubesLookupTable.h)
+        src/map/MarchingCubesLookupTable.h
+        src/util/ThreadPool.cpp
+        src/util/ThreadPool.h)
 
 # glfw
 find_package(glfw3 REQUIRED)

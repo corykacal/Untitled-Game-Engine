@@ -44,73 +44,86 @@ vector<Triangle *> ChunkManager::GetOrCreateChunk(glm::vec3 coords) {
     for(int i = 0; i<s_ChunkData.ChunkSize; i++) {
         for(int j=0; j<s_ChunkData.ChunkSize; j++) {
             for(int k=0; k<s_ChunkData.ChunkSize; k++) {
-                glm::vec3 pos = coords * (float)s_ChunkData.ChunkSize + glm::vec3(i, j, k);
+                glm::vec3 pos = coords * static_cast<float>(s_ChunkData.ChunkSize) + glm::vec3(i, j, k);
                 vector<Triangle*> cubeTriangles = GenerateTriangles(pos);
                 triangles.insert(triangles.end(), cubeTriangles.begin(), cubeTriangles.end());            }
         }
     }
     //cache
-    Chunk newChunk = Chunk{coords, triangles, 1};
+    const auto newChunk = Chunk{coords, triangles, true};
     chunks.push_back(newChunk);
     chunkMap[coords] = newChunk;
     return triangles;
 }
 
-vector<Triangle*> ChunkManager::GenerateTriangles(glm::vec3 pos) {
-    uint8_t cubeIndex = GetEdgeIndex(pos);
-    vector<int> vertexIndices = GetTriangles(cubeIndex);
+vector<Triangle*> ChunkManager::GenerateTriangles(const glm::vec3& pos) {
+    const auto cornerValues = GetCornerValues(pos);
+    const uint8_t cubeIndex = GetEdgeIndex(cornerValues);
+    const int edgeMask = edgeTable[cubeIndex];
+    if (edgeMask == 0) return {};
+
+    const vector<int> vertexIndices = GetTriangles(cubeIndex);
     if (vertexIndices.empty()) return {};
 
-    // Corrected edge midpoints
-    array<glm::vec3, 12> edgeMidpoints = {
-            pos + glm::vec3(0.5f, 0.0f, 0.0f), // Edge 0:  (0,0,0) - (1,0,0)
-            pos + glm::vec3(1.0f, 0.5f, 0.0f), // Edge 1:  (1,0,0) - (1,1,0)
-            pos + glm::vec3(0.5f, 1.0f, 0.0f), // Edge 2:  (0,1,0) - (1,1,0)
-            pos + glm::vec3(0.0f, 0.5f, 0.0f), // Edge 3:  (0,0,0) - (0,1,0)
-            pos + glm::vec3(0.5f, 0.0f, 1.0f), // Edge 4:  (0,0,1) - (1,0,1)
-            pos + glm::vec3(1.0f, 0.5f, 1.0f), // Edge 5:  (1,0,1) - (1,1,1)
-            pos + glm::vec3(0.5f, 1.0f, 1.0f), // Edge 6:  (0,1,1) - (1,1,1)
-            pos + glm::vec3(0.0f, 0.5f, 1.0f), // Edge 7:  (0,0,1) - (0,1,1)
-            pos + glm::vec3(0.0f, 0.0f, 0.5f), // Edge 8:  (0,0,0) - (0,0,1)
-            pos + glm::vec3(1.0f, 0.0f, 0.5f), // Edge 9:  (1,0,0) - (1,0,1)
-            pos + glm::vec3(1.0f, 1.0f, 0.5f), // Edge 10: (1,1,0) - (1,1,1)
-            pos + glm::vec3(0.0f, 1.0f, 0.5f)  // Edge 11: (0,1,0) - (0,1,1)
-    };
+    array<glm::vec3, 8> cornerPositions{};
+    for (int i = 0; i < 8; i++) {
+        const auto& corner = GetCorner(i);
+        cornerPositions[i] = pos + glm::vec3(corner[0], corner[1], corner[2]);
+    }
 
-    vector<Triangle *> triangles;
+    array<glm::vec3, 12> vertices{};
+    for (int i = 0; i < 12; i++) {
+        if (edgeMask & (1 << i)) {
+            int v1 = edgeToVertex[i][0];
+            int v2 = edgeToVertex[i][1];
+            vertices[i] = InterpolateVertex(
+                cornerPositions[v1],
+                cornerPositions[v2],
+                cornerValues[v1],
+                cornerValues[v2]
+            );
+        }
+    }
+
+    vector<Triangle*> triangles;
+    triangles.reserve(vertexIndices.size()/3);
     for (size_t i = 0; i < vertexIndices.size(); i += 3) {
-        glm::vec3 v1 = edgeMidpoints[vertexIndices[i]];
-        glm::vec3 v2 = edgeMidpoints[vertexIndices[i + 1]];
-        glm::vec3 v3 = edgeMidpoints[vertexIndices[i + 2]];
-        glm::vec4 color(1.0f); // Set color as needed
-        triangles.push_back(new Triangle(v1, v2, v3, color));
+        triangles.push_back(new Triangle(
+            vertices[vertexIndices[i]],
+            vertices[vertexIndices[i + 1]],
+            vertices[vertexIndices[i + 2]],
+            glm::vec4(1.0f)
+        ));
     }
 
     return triangles;
 }
 
-uint8_t ChunkManager::GetEdgeIndex(glm::vec3 pos) {
-    static const array<array<int, 3>, 8> corners = {{
-        {0, 0, 0}, // 0
-        {1, 0, 0}, // 1
-        {0, 1, 0}, // 2
-        {1, 1, 0}, // 3
-        {0, 0, 1}, // 4
-        {1, 0, 1}, // 5
-        {0, 1, 1}, // 6
-        {1, 1, 1}  // 7
-    }};
-    uint8_t edgeIndex = 0;
+vector<float> ChunkManager::GetCornerValues(const glm::vec3 pos) {
+    vector<float> cornerValues(8);
     for (int i = 0; i < 8; i++) {
-        glm::vec3 cornerPos = pos + glm::vec3(corners[i][0], corners[i][1], corners[i][2]);
-        float noiseValue = GetNoiseValue(cornerPos);
-        edgeIndex |= (noiseValue > 0.0f) << i;
+        auto corner = GetCorner(i);
+        const glm::vec3 cornerPos = pos + glm::vec3(corner[0], corner[1], corner[2]);
+        cornerValues[i] = GetNoiseValue(cornerPos);
+    }
+    return cornerValues;
+}
+
+uint8_t ChunkManager::GetEdgeIndex(const vector<float>& cornerValues) {
+    uint8_t edgeIndex = 0;
+    for (int i = 0; i < cornerValues.size(); i++) {
+        edgeIndex |= (cornerValues[i] > 0.0f) << i;
     }
     return edgeIndex;
 }
 
-float ChunkManager::GetNoiseValue(glm::vec3 pos) {
-    double noise = Perlin.normalizedOctave3D(
+glm::vec3 ChunkManager::InterpolateVertex(const glm::vec3& pos1, const glm::vec3& pos2, const float val1, const float val2) {
+    float t = (0.0f - val1) / (val2 - val1);
+    return pos1 + t * (pos2 - pos1);
+}
+
+float ChunkManager::GetNoiseValue(const glm::vec3 pos) {
+    const double noise = Perlin.normalizedOctave3D(
             pos.x * s_NoiseData.Frequency,
             pos.y * s_NoiseData.Frequency,
             pos.z * s_NoiseData.Frequency,
@@ -129,6 +142,6 @@ vector<Chunk> ChunkManager::GetDirtyChunks() {
     return dirtyChunks;
 }
 
-void ChunkManager::AddChunk(glm::vec3 coords) {
+void ChunkManager::AddChunk(const glm::vec3 coords) {
     GetOrCreateChunk(coords);
 }
